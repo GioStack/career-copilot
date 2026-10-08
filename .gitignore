@@ -1,0 +1,12 @@
+#Python 
+.venv/
+__pycache__/
+
+#Node / Frontend
+node_modules/
+
+#Secrets
+.env
+
+#Local database
+*.db
