@@ -17,3 +17,14 @@ def test_create_skill_with_invalid_level_returns_422():
     response = client.post("/skills", json={"name": "Python", "level": 999})
 
     assert response.status_code == 422
+
+
+def test_list_skills_returns_created_skill():
+    create_response = client.post("/skills", json={"name": "Docker", "level": 4})
+
+    assert create_response.status_code == 201
+
+    list_response = client.get("/skills")
+
+    assert list_response.status_code == 200
+    assert list_response.json() == [{"name": "Docker", "level": 4, "years": None}]
