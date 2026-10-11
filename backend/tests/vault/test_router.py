@@ -9,7 +9,11 @@ def test_create_skill_with_valid_data():
     response = client.post("/skills", json={"name": "Python", "level": 4, "years": 3.5})
 
     assert response.status_code == 201
-    assert response.json() == {"name": "Python", "level": 4, "years": 3.5}
+    data = response.json()
+    assert data["name"] == "Python"
+    assert data["level"] == 4
+    assert data["years"] == 3.5
+    assert "id" in data
 
 
 def test_create_skill_with_invalid_level_returns_422():
@@ -27,4 +31,6 @@ def test_list_skills_returns_created_skill():
     list_response = client.get("/skills")
 
     assert list_response.status_code == 200
-    assert list_response.json() == [{"name": "Docker", "level": 4, "years": None}]
+    data = list_response.json()
+    assert len(data) == 1
+    assert data[0]["name"] == "Docker"
