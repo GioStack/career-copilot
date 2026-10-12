@@ -33,3 +33,11 @@ def test_list_skills_returns_created_skill():
     data = list_response.json()
     assert len(data) == 1
     assert data[0]["name"] == "Docker"
+
+
+def test_list_skills_returns_empty_list_when_no_skills():
+    list_response = client.get("/skills")
+
+    assert list_response.status_code == 200
+    data = list_response.json()
+    assert data == []
