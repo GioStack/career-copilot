@@ -17,7 +17,6 @@ def test_create_skill_with_valid_data():
 
 
 def test_create_skill_with_invalid_level_returns_422():
-
     response = client.post("/skills", json={"name": "Python", "level": 999})
 
     assert response.status_code == 422
