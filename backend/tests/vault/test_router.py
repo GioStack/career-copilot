@@ -5,6 +5,7 @@ from career_copilot.main import app
 client = TestClient(app)
 
 
+# --- POST /skills ---
 def test_create_skill_with_valid_data():
     response = client.post("/skills", json={"name": "Python", "level": 4, "years": 3.5})
 
@@ -22,6 +23,7 @@ def test_create_skill_with_invalid_level_returns_422():
     assert response.status_code == 422
 
 
+# --- GET /skills ---
 def test_list_skills_returns_created_skill():
     create_response = client.post("/skills", json={"name": "Docker", "level": 4})
 
