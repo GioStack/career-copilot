@@ -1,6 +1,7 @@
+import uuid
 from typing import Annotated
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -24,3 +25,12 @@ def create_skill(skill: Skill, db: Annotated[Session, Depends(get_db)]) -> Skill
 def list_skills(db: Annotated[Session, Depends(get_db)]) -> list[SkillRead]:
     skills = db.scalars(select(SkillORM)).all()
     return [SkillRead.model_validate(skill) for skill in skills]
+
+
+@router.get("/{skill_id}")
+def get_skill(skill_id: uuid.UUID, db: Annotated[Session, Depends(get_db)]) -> SkillRead:
+    skill = db.get(SkillORM, skill_id)
+    if skill is None:
+        raise HTTPException(status_code=404, detail="Skill not found")
+
+    return SkillRead.model_validate(skill)
