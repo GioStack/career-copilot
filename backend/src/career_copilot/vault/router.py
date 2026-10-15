@@ -57,3 +57,14 @@ def update_skill(
     db.commit()
     db.refresh(skill_orm)
     return SkillRead.model_validate(skill_orm)
+
+
+@router.delete("/{skill_id}", status_code=204)
+def delete_skill(skill_id: uuid.UUID, db: Annotated[Session, Depends(get_db)]) -> None:
+    """Delete a skill, or 404 if it does not exist."""
+    skill_orm = db.get(SkillORM, skill_id)
+    if skill_orm is None:
+        raise HTTPException(status_code=404, detail="Skill not found")
+
+    db.delete(skill_orm)
+    db.commit()
