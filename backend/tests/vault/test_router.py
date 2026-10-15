@@ -70,3 +70,46 @@ def test_get_skill_by_id_returns_404_when_not_found():
 def test_get_skill_by_id_returns_422_when_id_is_invalid():
     get_response = client.get("/skills/abc")
     assert get_response.status_code == 422
+
+
+# --- PUT /skills/{id} ---
+def test_update_skill_returns_updated_skill():
+    create_response = client.post("/skills", json={"name": "Docker", "level": 3})
+
+    assert create_response.status_code == 201
+
+    skill_id = create_response.json()["id"]
+
+    update_response = client.put(
+        f"/skills/{skill_id}", json={"name": "Docker", "level": 5, "years": 2}
+    )
+
+    assert update_response.status_code == 200
+
+    assert update_response.json()["id"] == skill_id
+    assert update_response.json()["level"] == 5
+    assert update_response.json()["years"] == 2
+
+    get_response = client.get(f"/skills/{skill_id}")
+
+    assert get_response.json()["level"] == 5
+    assert get_response.json()["years"] == 2
+
+
+def test_update_skill_returns_404_when_not_found():
+    skill_id = uuid.uuid4()
+
+    update_response = client.put(f"/skills/{skill_id}", json={"name": "Docker", "level": 5})
+    assert update_response.status_code == 404
+    assert update_response.json()["detail"] == "Skill not found"
+
+
+def test_update_skill_returns_422_when_body_is_invalid():
+    create_response = client.post("/skills", json={"name": "Docker", "level": 3})
+
+    assert create_response.status_code == 201
+
+    skill_id = create_response.json()["id"]
+
+    update_response = client.put(f"/skills/{skill_id}", json={"name": "Docker", "level": 999})
+    assert update_response.status_code == 422

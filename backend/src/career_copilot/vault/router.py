@@ -38,3 +38,22 @@ def get_skill(skill_id: uuid.UUID, db: Annotated[Session, Depends(get_db)]) -> S
         raise HTTPException(status_code=404, detail="Skill not found")
 
     return SkillRead.model_validate(skill)
+
+
+@router.put("/{skill_id}")
+def update_skill(
+    skill_id: uuid.UUID, skill: Skill, db: Annotated[Session, Depends(get_db)]
+) -> SkillRead:
+    """Replace a skill's fields, or 404 if it does not exist."""
+    skill_orm = db.get(SkillORM, skill_id)
+    if skill_orm is None:
+        raise HTTPException(status_code=404, detail="Skill not found")
+
+    # PUT replaces every field with the values from the request.
+    for field, value in skill.model_dump().items():
+        setattr(skill_orm, field, value)
+
+    # No db.add(): the object was loaded by this session, so changes are tracked.
+    db.commit()
+    db.refresh(skill_orm)
+    return SkillRead.model_validate(skill_orm)
