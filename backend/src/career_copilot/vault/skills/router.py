@@ -6,8 +6,8 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from career_copilot.core.database import get_db
-from career_copilot.vault.models import SkillORM
-from career_copilot.vault.schemas import Skill, SkillRead
+from career_copilot.vault.skills.models import SkillORM
+from career_copilot.vault.skills.schemas import Skill, SkillRead
 
 router = APIRouter(prefix="/skills", tags=["skills"])
 

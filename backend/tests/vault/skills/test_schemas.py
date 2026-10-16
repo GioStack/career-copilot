@@ -1,7 +1,7 @@
 import pytest
 from pydantic import ValidationError
 
-from career_copilot.vault.schemas import Skill
+from career_copilot.vault.skills.schemas import Skill
 
 
 def test_skill_with_valid_data():

@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
 from career_copilot.core.database import Base, engine
-from career_copilot.vault.router import router as vault_router
+from career_copilot.vault.skills.router import router as skills_router
 
 
 @asynccontextmanager
@@ -14,7 +14,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="Career Copilot", lifespan=lifespan)
-app.include_router(vault_router)
+app.include_router(skills_router)
 
 
 @app.get("/health")
