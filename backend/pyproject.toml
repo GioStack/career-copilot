@@ -5,6 +5,7 @@ description = "Local-first Career & Personal Branding Copilot - FastAPI backend"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "email-validator>=2.3.0",
     "fastapi>=0.142.4",
     "pydantic-settings>=2.15.0",
     "sqlalchemy>=2.1.4",
