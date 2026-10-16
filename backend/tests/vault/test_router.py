@@ -113,3 +113,41 @@ def test_update_skill_returns_422_when_body_is_invalid():
 
     update_response = client.put(f"/skills/{skill_id}", json={"name": "Docker", "level": 999})
     assert update_response.status_code == 422
+
+
+# --- DELETE /skills/{id} ---
+def test_delete_skill_returns_204():
+    create_response = client.post("/skills", json={"name": "Python", "level": 3})
+
+    assert create_response.status_code == 201
+
+    skill_id = create_response.json()["id"]
+
+    delete_response = client.delete(f"/skills/{skill_id}")
+
+    assert delete_response.status_code == 204
+    assert delete_response.content == b""
+
+
+def test_delete_skill_returns_404_when_not_found():
+    skill_id = uuid.uuid4()
+
+    delete_response = client.delete(f"/skills/{skill_id}")
+    assert delete_response.status_code == 404
+    assert delete_response.json()["detail"] == "Skill not found"
+
+
+def test_deleted_skill_is_no_longer_found():
+    create_response = client.post("/skills", json={"name": "Docker", "level": 3})
+
+    assert create_response.status_code == 201
+
+    skill_id = create_response.json()["id"]
+
+    delete_response = client.delete(f"/skills/{skill_id}")
+
+    assert delete_response.status_code == 204
+
+    get_response = client.get(f"/skills/{skill_id}")
+
+    assert get_response.status_code == 404
