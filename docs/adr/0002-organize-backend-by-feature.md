@@ -1,7 +1,7 @@
 # 0002. Organize the backend by feature
 
 ## Status
-Accepted (2026-10-08)
+Accepted (2026-10-08). Refined by ADR 0009.
 
 ## Context
 The backend will grow into several independent modules (Career Vault, Job Tailoring,
