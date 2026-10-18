@@ -30,8 +30,17 @@ and reuses it to tailor applications and build your personal brand, without send
 
 Early development. Currently working:
 
-- Career Vault **Skills API** (`POST /skills`, `GET /skills`)
-- Input validation with Pydantic
+- Career Vault API:
+  - Skills: full CRUD (`POST /skills`, `GET /skills`, `GET /skills/{id}`, `PUT /skills/{id}`, `DELETE /skills/{id}`)
+  - Profile: a single user profile (`GET /profile`, `PUT /profile`)
+- Input validation with Pydantic (e.g. emails, URLs, value ranges, required fields)
 - Persistence in SQLite
+- Automated tests with an isolated in-memory test database
+
+Next: experience, education, projects and languages in the vault.
+
+## Architecture decisions
+
+Key technical decisions and their trade-offs are recorded as ADRs in [`docs/adr/`](docs/adr/).
 - Automated tests with an isolated in-memory test database
 
