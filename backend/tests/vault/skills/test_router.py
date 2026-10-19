@@ -25,6 +25,18 @@ def test_create_skill_with_invalid_level_returns_422():
     assert response.status_code == 422
 
 
+def test_create_skill_with_level_below_1_returns_422():
+    response = client.post("/skills", json={"name": "Python", "level": 0})
+
+    assert response.status_code == 422
+
+
+def test_create_skill_with_negative_years_returns_422():
+    response = client.post("/skills", json={"name": "Python", "level": 3, "years": -1})
+
+    assert response.status_code == 422
+
+
 # --- GET /skills ---
 def test_list_skills_returns_created_skill():
     create_response = client.post("/skills", json={"name": "Docker", "level": 4})
