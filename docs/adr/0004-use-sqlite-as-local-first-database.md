@@ -1,7 +1,7 @@
 # 0004. Use SQLite as a local-first database
 
 ## Status
-Accepted (2026-10-10)
+Accepted (2026-10-10).
 
 ## Context
 Career Copilot is a local-first app: it runs on the user's own machine, for a single user,

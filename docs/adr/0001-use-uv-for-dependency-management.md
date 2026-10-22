@@ -1,7 +1,7 @@
 # 0001. Use uv for dependency management
 
 ## Status
-Accepted (2026-10-08)
+Accepted (2026-10-08).
 
 ## Context
 The backend needs a reproducible Python environment: the same Python version

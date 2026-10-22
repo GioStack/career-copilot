@@ -1,7 +1,7 @@
 # 0006. Load configuration from environment variables and .env
 
 ## Status
-Accepted (2026-10-10)
+Accepted (2026-10-10).
 
 ## Context
 Some values change between machines or must stay secret

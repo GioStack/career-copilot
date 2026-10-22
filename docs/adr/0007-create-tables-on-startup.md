@@ -1,7 +1,7 @@
 # 0007. Create database tables on startup with create_all (no migrations yet)
 
 ## Status
-Accepted (2026-10-13)
+Accepted (2026-10-13).
 
 ## Context
 The app must create its tables automatically; previously they were created

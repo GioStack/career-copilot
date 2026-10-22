@@ -1,7 +1,7 @@
 # 0003. Use SQLAlchemy models with separate Pydantic schemas
 
 ## Status
-Accepted (2026-10-10)
+Accepted (2026-10-10).
 
 ## Context
 The backend needs to store data in a database and expose it through an API.

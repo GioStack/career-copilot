@@ -1,7 +1,7 @@
 # 0008. Use an issue, branch and pull request workflow
 
 ## Status
-Accepted (2026-10-13)
+Accepted (2026-10-13).
 
 ## Context
 Changes should be traceable (what changed and why), reviewed before they reach `main`,

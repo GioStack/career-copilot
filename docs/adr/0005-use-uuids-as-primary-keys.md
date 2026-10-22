@@ -1,7 +1,7 @@
 # 0005. Use UUIDs as primary keys
 
 ## Status
-Accepted (2026-10-11)
+Accepted (2026-10-11).
 
 ## Context
 Every record needs a unique id. Career Copilot is local-first: in the future,
