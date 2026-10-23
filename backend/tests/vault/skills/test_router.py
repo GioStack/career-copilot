@@ -19,6 +19,26 @@ def test_create_skill_with_valid_data():
     assert "id" in data
 
 
+def test_create_skill_with_level_1_returns_201():
+    response = client.post("/skills", json={"name": "Python", "level": 1})
+
+    assert response.status_code == 201
+    assert response.json()["level"] == 1
+
+
+def test_create_skill_with_level_5_returns_201():
+    response = client.post("/skills", json={"name": "Python", "level": 5})
+
+    assert response.status_code == 201
+    assert response.json()["level"] == 5
+
+
+def test_create_skill_with_empty_name_returns_422():
+    response = client.post("/skills", json={"name": "", "level": 3})
+
+    assert response.status_code == 422
+
+
 def test_create_skill_with_invalid_level_returns_422():
     response = client.post("/skills", json={"name": "Python", "level": 999})
 
@@ -33,6 +53,12 @@ def test_create_skill_with_level_below_1_returns_422():
 
 def test_create_skill_with_negative_years_returns_422():
     response = client.post("/skills", json={"name": "Python", "level": 3, "years": -1})
+
+    assert response.status_code == 422
+
+
+def test_create_skill_with_years_above_50_returns_422():
+    response = client.post("/skills", json={"name": "Python", "level": 3, "years": 51})
 
     assert response.status_code == 422
 
