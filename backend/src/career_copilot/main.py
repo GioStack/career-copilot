@@ -22,4 +22,4 @@ app.include_router(profile_router)
 @app.get("/health")
 def health() -> dict[str, str]:
     """Report that the server is running; does not check the database."""
-    return {"status": "ok"}
+    return {"status":"ok"}
