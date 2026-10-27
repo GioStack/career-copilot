@@ -1,3 +1,5 @@
+import uuid
+
 from fastapi.testclient import TestClient
 
 from career_copilot.main import app
@@ -64,3 +66,55 @@ def test_create_experience_with_end_date_before_start_date_returns_422():
     )
 
     assert create_response.status_code == 422
+
+
+# --- GET /experiences ---
+def test_list_experiences_returns_most_recent_first():
+    older = {**VALID_EXPERIENCE, "start_date": "2020-01-01", "end_date": "2021-12-31"}
+    newer = VALID_EXPERIENCE
+
+    # Create the older entry first, so the test fails if the list is not sorted.
+    assert client.post("/experiences", json=older).status_code == 201
+    assert client.post("/experiences", json=newer).status_code == 201
+
+    get_response = client.get("/experiences")
+
+    assert get_response.status_code == 200
+    data = get_response.json()
+    assert len(data) == 2
+    assert data[0]["start_date"] == newer["start_date"]
+    assert data[1]["start_date"] == older["start_date"]
+
+
+def test_list_experiences_returns_empty_list_when_no_experiences():
+    get_response = client.get("/experiences")
+    assert get_response.status_code == 200
+    assert get_response.json() == []
+
+
+# --- GET /experiences/{id} ---
+def test_get_experience_by_id_returns_experience():
+    create_response = client.post("/experiences", json=VALID_EXPERIENCE)
+
+    assert create_response.status_code == 201
+
+    experience_id = create_response.json()["id"]
+    get_response = client.get(f"/experiences/{experience_id}")
+    assert get_response.status_code == 200
+
+    data = get_response.json()
+    assert data["id"] == experience_id
+    assert data["title"] == VALID_EXPERIENCE["title"]
+
+
+def test_get_experience_by_id_returns_404_when_not_found():
+    experience_uuid = uuid.uuid4()
+    get_response = client.get(f"/experiences/{experience_uuid}")
+    assert get_response.status_code == 404
+    assert get_response.json()["detail"] == "Experience not found"
+
+
+def test_get_experience_by_id_returns_422_when_id_is_invalid():
+    get_response = client.get("/experiences/abc")
+
+    assert get_response.status_code == 422
