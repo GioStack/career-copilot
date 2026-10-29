@@ -61,3 +61,14 @@ def update_experience(
     db.commit()
     db.refresh(experience_orm)
     return ExperienceRead.model_validate(experience_orm)
+
+
+@router.delete("/{experience_id}", status_code=204)
+def delete_experience(experience_id: uuid.UUID, db: Annotated[Session, Depends(get_db)]) -> None:
+    """Delete an experience, or 404 if it does not exist."""
+    experience_orm = db.get(ExperienceORM, experience_id)
+    if experience_orm is None:
+        raise HTTPException(status_code=404, detail="Experience not found")
+
+    db.delete(experience_orm)
+    db.commit()

@@ -171,3 +171,36 @@ def test_update_experience_returns_422_when_body_is_invalid():
     )
 
     assert update_response.status_code == 422
+
+
+# --- DELETE /experiences/{id} ---
+def test_delete_experience_returns_204():
+    create_response = client.post("/experiences", json=VALID_EXPERIENCE)
+
+    assert create_response.status_code == 201
+
+    experience_id = create_response.json()["id"]
+
+    delete_response = client.delete(f"/experiences/{experience_id}")
+
+    assert delete_response.status_code == 204
+    assert delete_response.content == b""
+
+    get_response = client.get(f"/experiences/{experience_id}")
+
+    assert get_response.status_code == 404
+
+
+def test_delete_experience_returns_404_when_not_found():
+    experience_id = uuid.uuid4()
+
+    delete_response = client.delete(f"/experiences/{experience_id}")
+
+    assert delete_response.status_code == 404
+    assert delete_response.json()["detail"] == "Experience not found"
+
+
+def test_delete_experience_returns_422_when_id_is_invalid():
+    delete_response = client.delete("/experiences/abc")
+
+    assert delete_response.status_code == 422
