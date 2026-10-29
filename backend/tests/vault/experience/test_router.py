@@ -118,3 +118,56 @@ def test_get_experience_by_id_returns_422_when_id_is_invalid():
     get_response = client.get("/experiences/abc")
 
     assert get_response.status_code == 422
+
+
+# --- PUT /experiences/{id} ---
+def test_update_experience_returns_updated_experience():
+    create_response = client.post("/experiences", json=VALID_EXPERIENCE)
+
+    assert create_response.status_code == 201
+
+    experience_id = create_response.json()["id"]
+
+    update_response = client.put(
+        f"/experiences/{experience_id}",
+        json={**VALID_EXPERIENCE, "title": "Senior Backend Developer"},
+    )
+
+    assert update_response.status_code == 200
+
+    data = update_response.json()
+
+    assert data["id"] == experience_id
+    assert data["title"] == "Senior Backend Developer"
+
+    get_response = client.get(f"/experiences/{experience_id}")
+
+    assert get_response.json()["title"] == "Senior Backend Developer"
+
+
+def test_update_experience_returns_404_when_not_found():
+    experience_id = uuid.uuid4()
+    update_response = client.put(f"/experiences/{experience_id}", json=VALID_EXPERIENCE)
+
+    assert update_response.status_code == 404
+    assert update_response.json()["detail"] == "Experience not found"
+
+
+def test_update_experience_returns_422_when_id_is_invalid():
+    update_response = client.put("/experiences/abc", json=VALID_EXPERIENCE)
+
+    assert update_response.status_code == 422
+
+
+def test_update_experience_returns_422_when_body_is_invalid():
+    create_response = client.post("/experiences", json=VALID_EXPERIENCE)
+
+    assert create_response.status_code == 201
+
+    experience_id = create_response.json()["id"]
+
+    update_response = client.put(
+        f"/experiences/{experience_id}", json={**VALID_EXPERIENCE, "end_date": "2024-02-01"}
+    )
+
+    assert update_response.status_code == 422
