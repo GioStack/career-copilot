@@ -42,3 +42,22 @@ def get_experience(
         raise HTTPException(status_code=404, detail="Experience not found")
 
     return ExperienceRead.model_validate(experience_orm)
+
+
+@router.put("/{experience_id}")
+def update_experience(
+    experience_id: uuid.UUID, experience: Experience, db: Annotated[Session, Depends(get_db)]
+) -> ExperienceRead:
+    """Replace an experience's fields, or 404 if it does not exist."""
+    experience_orm = db.get(ExperienceORM, experience_id)
+    if experience_orm is None:
+        raise HTTPException(status_code=404, detail="Experience not found")
+
+    # PUT replaces every field with the values from the request.
+    for field, value in experience.model_dump().items():
+        setattr(experience_orm, field, value)
+
+    # No db.add(): the object was loaded by this session, so changes are tracked.
+    db.commit()
+    db.refresh(experience_orm)
+    return ExperienceRead.model_validate(experience_orm)
