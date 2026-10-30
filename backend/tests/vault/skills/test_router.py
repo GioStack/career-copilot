@@ -33,6 +33,20 @@ def test_create_skill_with_level_5_returns_201():
     assert response.json()["level"] == 5
 
 
+def test_create_skill_with_years_0_returns_201():
+    response = client.post("/skills", json={"name": "Python", "level": 3, "years": 0})
+
+    assert response.status_code == 201
+    assert response.json()["years"] == 0
+
+
+def test_create_skill_with_years_50_returns_201():
+    response = client.post("/skills", json={"name": "Python", "level": 3, "years": 50})
+
+    assert response.status_code == 201
+    assert response.json()["years"] == 50
+
+
 def test_create_skill_with_empty_name_returns_422():
     response = client.post("/skills", json={"name": "", "level": 3})
 
@@ -47,6 +61,12 @@ def test_create_skill_with_invalid_level_returns_422():
 
 def test_create_skill_with_level_below_1_returns_422():
     response = client.post("/skills", json={"name": "Python", "level": 0})
+
+    assert response.status_code == 422
+
+
+def test_create_skill_without_level_returns_422():
+    response = client.post("/skills", json={"name": "Python"})
 
     assert response.status_code == 422
 
@@ -132,6 +152,23 @@ def test_update_skill_returns_updated_skill():
 
     assert get_response.json()["level"] == 5
     assert get_response.json()["years"] == 2
+
+
+def test_update_skill_sets_years_to_none_when_not_sent():
+    create_response = client.post("/skills", json={"name": "Python", "level": 3, "years": 2})
+
+    assert create_response.status_code == 201
+
+    skill_id = create_response.json()["id"]
+
+    update_response = client.put(f"/skills/{skill_id}", json={"name": "Python", "level": 3})
+
+    assert update_response.status_code == 200
+    assert update_response.json()["years"] is None
+
+    get_response = client.get(f"/skills/{skill_id}")
+
+    assert get_response.json()["years"] is None
 
 
 def test_update_skill_returns_404_when_not_found():
