@@ -18,3 +18,4 @@ ADRs are not edited after they are accepted; a new ADR refines or replaces an ol
 | [0010](0010-use-a-single-profile-resource.md) | Use a single profile resource with GET and PUT | Accepted |
 | [0011](0011-test-validation-through-the-api.md) | Test validation through the API | Accepted |
 | [0012](0012-run-checks-in-ci-with-github-actions.md) | Run checks in CI with GitHub Actions | Accepted |
+| [0013](0013-use-dates-with-a-nullable-end-date-for-experience.md) | Use dates with a nullable end date for work experience | Accepted |
