@@ -145,6 +145,26 @@ def test_update_experience_returns_updated_experience():
     assert get_response.json()["title"] == "Senior Backend Developer"
 
 
+def test_update_experience_sets_location_to_none_when_not_sent():
+    create_response = client.post("/experiences", json=VALID_EXPERIENCE)
+
+    assert create_response.status_code == 201
+
+    experience_id = create_response.json()["id"]
+
+    experience = VALID_EXPERIENCE.copy()
+    del experience["location"]
+
+    update_response = client.put(f"/experiences/{experience_id}", json=experience)
+
+    assert update_response.status_code == 200
+    assert update_response.json()["location"] is None
+
+    get_response = client.get(f"/experiences/{experience_id}")
+
+    assert get_response.json()["location"] is None
+
+
 def test_update_experience_returns_404_when_not_found():
     experience_id = uuid.uuid4()
     update_response = client.put(f"/experiences/{experience_id}", json=VALID_EXPERIENCE)
