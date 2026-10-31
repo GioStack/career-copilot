@@ -57,6 +57,21 @@ def test_put_profile_replaces_existing_profile():
     assert get_response.json()["id"] == profile_id
 
 
+def test_put_profile_sets_phone_to_none_when_not_sent():
+    create_response = client.put("/profile", json={**VALID_PROFILE, "phone": "+30 210 000 0000"})
+
+    assert create_response.status_code == 200
+
+    update_response = client.put("/profile", json=VALID_PROFILE)
+
+    assert update_response.status_code == 200
+    assert update_response.json()["phone"] is None
+
+    get_response = client.get("/profile")
+
+    assert get_response.json()["phone"] is None
+
+
 def test_put_profile_returns_422_for_invalid_email():
     update_response = client.put("/profile", json={**VALID_PROFILE, "email": "not-an-email"})
 
