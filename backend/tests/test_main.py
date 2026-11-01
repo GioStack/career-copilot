@@ -1,18 +1,17 @@
 from fastapi.testclient import TestClient
-from sqlalchemy import create_engine, inspect
-from sqlalchemy.pool import StaticPool
+from sqlalchemy import inspect
 
+from career_copilot.core.database import Base
 from career_copilot.main import app
 
 
-def test_lifespan_creates_tables(monkeypatch):
-    test_engine = create_engine(
-        "sqlite://", connect_args={"check_same_thread": False}, poolclass=StaticPool
-    )
-    monkeypatch.setattr("career_copilot.main.engine", test_engine)
-    assert "skills" not in inspect(test_engine).get_table_names()
+def test_lifespan_creates_tables(monkeypatch, db_engine):
+
+    Base.metadata.drop_all(db_engine)
+    monkeypatch.setattr("career_copilot.main.engine", db_engine)
+    assert "skills" not in inspect(db_engine).get_table_names()
 
     with TestClient(app):
         pass
 
-    assert "skills" in inspect(test_engine).get_table_names()
+    assert "skills" in inspect(db_engine).get_table_names()

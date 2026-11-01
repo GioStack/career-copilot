@@ -18,13 +18,13 @@ and reuses it to tailor applications and build your personal brand, while your d
 
 ## Principles
 
-- **Local-first**: your data lives in a local SQLite database on your machine.
+- **Local-first**: your data lives in a local PostgreSQL database, running in Docker on your machine.
 - **BYOK (Bring Your Own Key)**: you use your own LLM API key; no keys or data go through our servers.
 
 ## Tech stack
 
-- **Backend**: Python 3.12, FastAPI, Pydantic v2, SQLAlchemy 2, SQLite
-- **Tooling**: uv, pytest, ruff, GitHub Actions CI
+- **Backend**: Python 3.12, FastAPI, Pydantic v2, SQLAlchemy 2, PostgreSQL
+- **Tooling**: uv, Docker Compose, pytest, ruff, GitHub Actions CI
 - **Frontend** *(planned)*: React + TypeScript
 
 ## Status
@@ -36,11 +36,32 @@ Early development. Currently working:
   - Skills: full CRUD (`POST /skills`, `GET /skills`, `GET /skills/{id}`, `PUT /skills/{id}`, `DELETE /skills/{id}`)
   - Experience: full CRUD (`POST /experiences`, `GET /experiences`, `GET /experiences/{id}`, `PUT /experiences/{id}`, `DELETE /experiences/{id}`)
 - Input validation with Pydantic (e.g. emails, URLs, value ranges, required fields)
-- Persistence in SQLite
-- Automated tests with an isolated in-memory test database
+- Persistence in PostgreSQL
+- Automated tests on a separate PostgreSQL test database
 - CI on every pull request: formatting, linting and tests with GitHub Actions
 
-Next: education, projects and languages in the vault.
+Next: database migrations with Alembic, then achievements, projects, education and languages in the vault.
+
+## Running locally
+
+Requirements: Docker and uv.
+
+1. Copy `backend/.env.example` to `backend/.env` and set your own password.
+2. Start PostgreSQL from the repository root:
+
+       docker compose up -d
+
+3. Create the test database (once):
+
+       docker compose exec db psql -U career_copilot -d career_copilot -c "CREATE DATABASE career_copilot_test;"
+
+4. From `backend/`, start the API at http://127.0.0.1:8000/docs:
+
+       uv run uvicorn career_copilot.main:app --reload
+
+5. From `backend/`, run the tests:
+
+       uv run pytest
 
 ## Architecture decisions
 

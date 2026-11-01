@@ -5,9 +5,7 @@ from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
 
 from career_copilot.core.config import settings
 
-# SQLite allows a connection only in the thread that created it;
-# FastAPI runs sync endpoints in a threadpool, so this check is disabled.
-engine = create_engine(settings.database_url, connect_args={"check_same_thread": False})
+engine = create_engine(settings.database_url)
 
 SessionLocal = sessionmaker(bind=engine)
 
