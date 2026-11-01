@@ -45,3 +45,7 @@ Next: education, projects and languages in the vault.
 ## Architecture decisions
 
 Key technical decisions and their trade-offs are recorded as ADRs in [`docs/adr/`](docs/adr/).
+
+## Testing
+
+How tests are written and checked is described in [`docs/testing.md`](docs/testing.md).
