@@ -9,7 +9,7 @@ ADRs are not edited after they are accepted; a new ADR refines or replaces an ol
 | [0001](0001-use-uv-for-dependency-management.md) | Use uv for dependency management | Accepted |
 | [0002](0002-organize-backend-by-feature.md) | Organize the backend by feature | Accepted, refined by 0009 |
 | [0003](0003-use-sqlalchemy-with-pydantic-schemas.md) | Use SQLAlchemy models with separate Pydantic schemas | Accepted |
-| [0004](0004-use-sqlite-as-local-first-database.md) | Use SQLite as a local-first database | Accepted |
+| [0004](0004-use-sqlite-as-local-first-database.md) | Use SQLite as a local-first database | Superseded by 0014 |
 | [0005](0005-use-uuids-as-primary-keys.md) | Use UUIDs as primary keys | Accepted |
 | [0006](0006-load-configuration-from-env.md) | Load configuration from environment variables and .env | Accepted |
 | [0007](0007-create-tables-on-startup.md) | Create database tables on startup with create_all (no migrations yet) | Accepted |
@@ -19,3 +19,4 @@ ADRs are not edited after they are accepted; a new ADR refines or replaces an ol
 | [0011](0011-test-validation-through-the-api.md) | Test validation through the API | Accepted |
 | [0012](0012-run-checks-in-ci-with-github-actions.md) | Run checks in CI with GitHub Actions | Accepted |
 | [0013](0013-use-dates-with-a-nullable-end-date-for-experience.md) | Use dates with a nullable end date for work experience | Accepted |
+| [0014](0014-use-postgresql-in-docker.md) | Use PostgreSQL in Docker | Accepted |
