@@ -7,6 +7,3 @@ node_modules/
 
 #Secrets
 .env
-
-#Local database
-*.db

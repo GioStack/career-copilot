@@ -36,7 +36,7 @@ def put_profile(profile: Profile, db: Annotated[Session, Depends(get_db)]) -> Pr
         db.add(profile_orm)
 
     for field, value in profile.model_dump().items():
-        # SQLite has no URL type, so URLs are stored as text.
+        # The database has no URL type, so URLs are stored as text.
         if isinstance(value, HttpUrl):
             value = str(value)
         setattr(profile_orm, field, value)
