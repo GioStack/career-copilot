@@ -1,6 +1,6 @@
 # Career Copilot
 
-![Career Copilot](docs/images/cover.jpg)
+![Career Copilot](assets/cover.jpg)
 
 Store your career data once. Tailor your CV, summary and cover letter to every job posting.
 
