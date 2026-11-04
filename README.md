@@ -33,11 +33,11 @@ Solid boxes work today. Dashed boxes are next.
 
 | Works today | Coming next |
 |---|---|
-| Career Vault API: profile, skills, experience | Database migrations (Alembic) |
-| Input validation (Pydantic) | Achievements, projects, education |
-| 50+ tests on a separate test database | **Tailoring engine**: CV, summary, cover letter |
-| CI on every pull request (GitHub Actions) | React frontend |
-| | Interview preparation |
+| Career Vault API: profile, skills, experience | Achievements, projects, education |
+| Input validation (Pydantic) | **Tailoring engine**: CV, summary, cover letter |
+| Database migrations (Alembic), checked in CI | React frontend |
+| 50+ tests on a separate test database | Interview preparation |
+| CI on every pull request (GitHub Actions) | |
 
 ## Key decisions
 
@@ -45,6 +45,7 @@ Solid boxes work today. Dashed boxes are next.
 |---|---|---|
 | **FastAPI** | Validation and API docs come from type hints | No built-in auth or migrations |
 | **PostgreSQL in Docker** | Vector search (`pgvector`) for the AI features, real foreign keys | Docker must be running |
+| **Alembic migrations, run outside the app** | Schema changes keep the data; CI fails if a model has no migration | One more step before starting the app |
 | **UUID ids** | Data can move between machines without id clashes | Harder to read while debugging |
 | **Tests through the API** | Tests check what the client actually receives | Slower than testing schemas directly |
 
@@ -54,7 +55,7 @@ Every decision is explained in [`docs/adr/`](docs/adr/).
 
 ```mermaid
 flowchart LR
-    A["SQLite<br/>skills API"] --> B["Profile &<br/>experience"] --> C["CI with<br/>GitHub Actions"] --> D["PostgreSQL<br/>in Docker"]
+    A["SQLite<br/>skills API"] --> B["Profile &<br/>experience"] --> C["CI with<br/>GitHub Actions"] --> D["PostgreSQL<br/>in Docker"] --> E["Alembic<br/>migrations"]
 ```
 
 I started with SQLite for zero setup, then moved to PostgreSQL once the AI plans needed vector search ([ADR 0014](docs/adr/0014-use-postgresql-in-docker.md)).
@@ -74,6 +75,7 @@ cp backend/.env.example backend/.env    # then set your own password
 docker compose up -d
 docker compose exec db psql -U career_copilot -d career_copilot -c "CREATE DATABASE career_copilot_test;"
 cd backend
+uv run alembic upgrade head    # create or update the tables
 uv run uvicorn career_copilot.main:app --reload    # API docs at http://127.0.0.1:8000/docs
 uv run pytest
 ```
