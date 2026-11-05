@@ -17,7 +17,9 @@ Every test must catch a realistic mistake that no other test catches.
 A test that only repeats what another test already covers is not added.
 
 Validation is tested through the API, not on the schema directly (ADR 0011).
-Each test starts with an empty database (`tests/vault/conftest.py`).
+The test database is built with the migrations once per test run, and each test runs
+inside a transaction that is rolled back at the end, so every test starts with empty tables
+(`tests/conftest.py`, ADR 0015).
 Test data is fake: `example.com` emails, "Example Co" companies.
 
 ## Tests for each endpoint
