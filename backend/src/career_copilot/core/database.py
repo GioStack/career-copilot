@@ -11,7 +11,7 @@ SessionLocal = sessionmaker(bind=engine)
 
 
 class Base(DeclarativeBase):
-    """Registry of all ORM tables; used by `Base.metadata.create_all()`."""
+    """Registry of all ORM tables; Alembic compares it with the database to build migrations."""
 
 
 def get_db() -> Generator[Session, None, None]:

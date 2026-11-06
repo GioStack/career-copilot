@@ -6,7 +6,7 @@ from career_copilot.core.database import Base
 
 
 class SkillORM(Base):
-    """Database table for skills; inheriting `Base` registers it for `create_all`."""
+    """Database table for skills; inheriting `Base` adds it to the metadata Alembic reads."""
 
     __tablename__ = "skills"
 

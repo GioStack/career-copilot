@@ -7,7 +7,7 @@ from career_copilot.core.database import Base
 
 
 class ProfileORM(Base):
-    """Database table for profiles; inheriting `Base` registers it for `create_all`."""
+    """Database table for profiles; inheriting `Base` adds it to the metadata Alembic reads."""
 
     __tablename__ = "profiles"
 
