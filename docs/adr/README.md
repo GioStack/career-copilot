@@ -21,3 +21,4 @@ ADRs are not edited after they are accepted; a new ADR refines or replaces an ol
 | [0013](0013-use-dates-with-a-nullable-end-date-for-experience.md) | Use dates with a nullable end date for work experience | Accepted |
 | [0014](0014-use-postgresql-in-docker.md) | Use PostgreSQL in Docker | Accepted |
 | [0015](0015-manage-the-schema-with-alembic-migrations.md) | Manage the database schema with Alembic migrations | Accepted |
+| [0016](0016-store-achievements-in-their-own-table.md) | Store achievements in their own table | Accepted |
