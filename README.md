@@ -72,8 +72,7 @@ Requires Docker and [uv](https://docs.astral.sh/uv/).
 
 ```bash
 cp backend/.env.example backend/.env    # then set your own password
-docker compose up -d
-docker compose exec db psql -U career_copilot -d career_copilot -c "CREATE DATABASE career_copilot_test;"
+docker compose up -d    # starts PostgreSQL and creates the app and test databases
 cd backend
 uv run alembic upgrade head    # create or update the tables
 uv run uvicorn career_copilot.main:app --reload    # API docs at http://127.0.0.1:8000/docs
