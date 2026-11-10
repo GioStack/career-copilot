@@ -212,3 +212,37 @@ def test_delete_experience_with_achievements_returns_204():
 
     # Without ON DELETE CASCADE, the foreign key would block this delete.
     assert delete_response.status_code == 204
+
+
+# --- GET /achievements/{achievement_id} ---
+def test_get_achievement_returns_200():
+    create_response = client.post("/experiences", json=VALID_EXPERIENCE)
+
+    assert create_response.status_code == 201
+    experience_id = create_response.json()["id"]
+
+    achievement_response = client.post(
+        f"/experiences/{experience_id}/achievements", json=VALID_ACHIEVEMENT
+    )
+
+    assert achievement_response.status_code == 201
+
+    achievement_id = achievement_response.json()["id"]
+
+    get_response = client.get(f"/achievements/{achievement_id}")
+
+    assert get_response.status_code == 200
+    assert get_response.json()["text"] == VALID_ACHIEVEMENT["text"]
+
+
+def test_get_achievement_returns_404_when_not_found():
+    get_response = client.get(f"/achievements/{uuid.uuid4()}")
+
+    assert get_response.status_code == 404
+    assert get_response.json()["detail"] == "Achievement not found"
+
+
+def test_get_achievement_with_invalid_id_returns_422():
+    get_response = client.get("/achievements/abc")
+
+    assert get_response.status_code == 422

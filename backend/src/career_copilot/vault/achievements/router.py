@@ -52,3 +52,15 @@ def list_achievements(
         .order_by(AchievementORM.position)
     ).all()
     return [AchievementRead.model_validate(achievement_orm) for achievement_orm in achievements]
+
+
+@router.get("/achievements/{achievement_id}")
+def get_achievement(
+    achievement_id: uuid.UUID, db: Annotated[Session, Depends(get_db)]
+) -> AchievementRead:
+    """Return one achievement by id, or 404 if it does not exist."""
+    achievement_orm = db.get(AchievementORM, achievement_id)
+    if achievement_orm is None:
+        raise HTTPException(status_code=404, detail="Achievement not found")
+
+    return AchievementRead.model_validate(achievement_orm)
