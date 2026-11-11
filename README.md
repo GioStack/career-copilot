@@ -14,7 +14,7 @@ Job seekers rewrite the same experience for every application. The facts stay th
 
 ```mermaid
 flowchart LR
-    A["Your career data<br/>profile, skills, experience"] --> B[("Career Vault<br/>PostgreSQL")]
+    A["Your career data<br/>profile, skills, experience, achievements"] --> B[("Career Vault<br/>PostgreSQL")]
     J["Job posting"] --> C["LLM<br/>your own API key"]
     B --> C
     C --> D["Tailored CV"]
@@ -33,11 +33,12 @@ Solid boxes work today. Dashed boxes are next.
 
 | Works today | Coming next |
 |---|---|
-| Career Vault API: profile, skills, experience | Achievements, projects, education |
+| Career Vault API: profile, skills, experience, achievements | Projects, education, languages |
 | Input validation (Pydantic) | **Tailoring engine**: CV, summary, cover letter |
 | Database migrations (Alembic), checked in CI | React frontend |
-| 50+ tests on a separate test database | Interview preparation |
+| 70+ tests on a separate test database | Interview preparation |
 | CI on every pull request (GitHub Actions) | |
+| One command to start or check everything (`just`) | |
 
 ## Key decisions
 
@@ -55,7 +56,7 @@ Every decision is explained in [`docs/adr/`](docs/adr/).
 
 ```mermaid
 flowchart LR
-    A["SQLite<br/>skills API"] --> B["Profile &<br/>experience"] --> C["CI with<br/>GitHub Actions"] --> D["PostgreSQL<br/>in Docker"] --> E["Alembic<br/>migrations"]
+    A["SQLite<br/>skills API"] --> B["Profile &<br/>experience"] --> C["CI with<br/>GitHub Actions"] --> D["PostgreSQL<br/>in Docker"] --> E["Alembic<br/>migrations"] --> F["Achievements"]
 ```
 
 I started with SQLite for zero setup, then moved to PostgreSQL once the AI plans needed vector search ([ADR 0014](docs/adr/0014-use-postgresql-in-docker.md)).
