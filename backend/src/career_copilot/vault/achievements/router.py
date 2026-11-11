@@ -81,3 +81,13 @@ def update_achievement(
     db.commit()
     db.refresh(achievement_orm)
     return AchievementRead.model_validate(achievement_orm)
+
+
+@router.delete("/achievements/{achievement_id}", status_code=204)
+def delete_achievement(achievement_id: uuid.UUID, db: Annotated[Session, Depends(get_db)]) -> None:
+    """Delete an achievement, or 404 if it does not exist."""
+    achievement_orm = db.get(AchievementORM, achievement_id)
+    if achievement_orm is None:
+        raise HTTPException(status_code=404, detail="Achievement not found")
+    db.delete(achievement_orm)
+    db.commit()
