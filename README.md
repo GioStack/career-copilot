@@ -68,19 +68,19 @@ I started with SQLite for zero setup, then moved to PostgreSQL once the AI plans
 
 ## Run it locally
 
-Requires Docker and [uv](https://docs.astral.sh/uv/).
+Requires Docker, [uv](https://docs.astral.sh/uv/) and [just](https://just.systems/) (`uv tool install rust-just`).
 
 ```bash
 cp backend/.env.example backend/.env    # then set your own password
-docker compose up -d    # starts PostgreSQL and creates the app and test databases
-cd backend
-uv run alembic upgrade head    # create or update the tables
-uv run uvicorn career_copilot.main:app --reload    # API docs at http://127.0.0.1:8000/docs
-uv run pytest
+just up       # start PostgreSQL and apply the migrations
+just dev      # run the API; docs at http://127.0.0.1:8000/docs
+just check    # format, lint and test
 ```
+
+Run `just` to list all commands.
 
 How tests are written: [`docs/testing.md`](docs/testing.md)
 
 ## Tech stack
 
-Python 3.12 · FastAPI · Pydantic v2 · SQLAlchemy 2 · PostgreSQL · Docker Compose · uv · pytest · ruff · GitHub Actions
+Python 3.12 · FastAPI · Pydantic v2 · SQLAlchemy 2 · PostgreSQL · Docker Compose · uv · just · pytest · ruff · GitHub Actions
