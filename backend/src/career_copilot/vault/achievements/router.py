@@ -52,3 +52,42 @@ def list_achievements(
         .order_by(AchievementORM.position)
     ).all()
     return [AchievementRead.model_validate(achievement_orm) for achievement_orm in achievements]
+
+
+@router.get("/achievements/{achievement_id}")
+def get_achievement(
+    achievement_id: uuid.UUID, db: Annotated[Session, Depends(get_db)]
+) -> AchievementRead:
+    """Return one achievement by id, or 404 if it does not exist."""
+    achievement_orm = db.get(AchievementORM, achievement_id)
+    if achievement_orm is None:
+        raise HTTPException(status_code=404, detail="Achievement not found")
+
+    return AchievementRead.model_validate(achievement_orm)
+
+
+@router.put("/achievements/{achievement_id}")
+def update_achievement(
+    achievement_id: uuid.UUID, achievement: Achievement, db: Annotated[Session, Depends(get_db)]
+) -> AchievementRead:
+    """Replace the text of an achievement; its position stays the same. 404 if it does not exist."""
+    achievement_orm = db.get(AchievementORM, achievement_id)
+    if achievement_orm is None:
+        raise HTTPException(status_code=404, detail="Achievement not found")
+
+    # PUT replaces every field from the request; position is not part of it.
+    for field, value in achievement.model_dump().items():
+        setattr(achievement_orm, field, value)
+    db.commit()
+    db.refresh(achievement_orm)
+    return AchievementRead.model_validate(achievement_orm)
+
+
+@router.delete("/achievements/{achievement_id}", status_code=204)
+def delete_achievement(achievement_id: uuid.UUID, db: Annotated[Session, Depends(get_db)]) -> None:
+    """Delete an achievement, or 404 if it does not exist."""
+    achievement_orm = db.get(AchievementORM, achievement_id)
+    if achievement_orm is None:
+        raise HTTPException(status_code=404, detail="Achievement not found")
+    db.delete(achievement_orm)
+    db.commit()

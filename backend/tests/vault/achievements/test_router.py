@@ -212,3 +212,166 @@ def test_delete_experience_with_achievements_returns_204():
 
     # Without ON DELETE CASCADE, the foreign key would block this delete.
     assert delete_response.status_code == 204
+
+
+# --- GET /achievements/{achievement_id} ---
+def test_get_achievement_returns_200():
+    create_response = client.post("/experiences", json=VALID_EXPERIENCE)
+
+    assert create_response.status_code == 201
+    experience_id = create_response.json()["id"]
+
+    achievement_response = client.post(
+        f"/experiences/{experience_id}/achievements", json=VALID_ACHIEVEMENT
+    )
+
+    assert achievement_response.status_code == 201
+
+    achievement_id = achievement_response.json()["id"]
+
+    get_response = client.get(f"/achievements/{achievement_id}")
+
+    assert get_response.status_code == 200
+    assert get_response.json()["text"] == VALID_ACHIEVEMENT["text"]
+
+
+def test_get_achievement_returns_404_when_not_found():
+    achievement_id = uuid.uuid4()
+    get_response = client.get(f"/achievements/{achievement_id}")
+
+    assert get_response.status_code == 404
+    assert get_response.json()["detail"] == "Achievement not found"
+
+
+def test_get_achievement_with_invalid_id_returns_422():
+    get_response = client.get("/achievements/abc")
+
+    assert get_response.status_code == 422
+
+
+# --- PUT /achievements/{achievement_id} ---
+def test_update_achievement_returns_200():
+    create_response = client.post("/experiences", json=VALID_EXPERIENCE)
+
+    assert create_response.status_code == 201
+    experience_id = create_response.json()["id"]
+
+    achievement_response = client.post(
+        f"/experiences/{experience_id}/achievements", json=VALID_ACHIEVEMENT
+    )
+
+    assert achievement_response.status_code == 201
+    achievement_id = achievement_response.json()["id"]
+
+    update_response = client.put(
+        f"/achievements/{achievement_id}", json={**VALID_ACHIEVEMENT, "text": "Updated Achievement"}
+    )
+
+    assert update_response.status_code == 200
+    assert update_response.json()["text"] == "Updated Achievement"
+
+    get_response = client.get(f"/achievements/{achievement_id}")
+
+    assert get_response.json()["text"] == "Updated Achievement"
+
+
+def test_update_achievement_keeps_its_position():
+    create_response = client.post("/experiences", json=VALID_EXPERIENCE)
+
+    assert create_response.status_code == 201
+    experience_id = create_response.json()["id"]
+
+    first_response = client.post(
+        f"/experiences/{experience_id}/achievements",
+        json={**VALID_ACHIEVEMENT, "text": "First Achievement"},
+    )
+
+    assert first_response.status_code == 201
+    achievement_id = first_response.json()["id"]
+
+    second_response = client.post(
+        f"/experiences/{experience_id}/achievements",
+        json={**VALID_ACHIEVEMENT, "text": "Second Achievement"},
+    )
+
+    assert second_response.status_code == 201
+
+    update_response = client.put(
+        f"/achievements/{achievement_id}",
+        json={**VALID_ACHIEVEMENT, "text": "First Updated Achievement"},
+    )
+
+    assert update_response.status_code == 200
+    assert update_response.json()["position"] == 1
+
+
+def test_update_achievement_returns_404_when_not_found():
+    achievement_id = uuid.uuid4()
+    update_response = client.put(f"/achievements/{achievement_id}", json=VALID_ACHIEVEMENT)
+
+    assert update_response.status_code == 404
+    assert update_response.json()["detail"] == "Achievement not found"
+
+
+def test_update_achievement_with_invalid_id_returns_422():
+    update_response = client.put("/achievements/abc", json=VALID_ACHIEVEMENT)
+
+    assert update_response.status_code == 422
+
+
+def test_update_achievement_with_empty_text_returns_422():
+    create_response = client.post("/experiences", json=VALID_EXPERIENCE)
+
+    assert create_response.status_code == 201
+    experience_id = create_response.json()["id"]
+
+    achievement_response = client.post(
+        f"/experiences/{experience_id}/achievements", json=VALID_ACHIEVEMENT
+    )
+
+    assert achievement_response.status_code == 201
+    achievement_id = achievement_response.json()["id"]
+
+    update_response = client.put(
+        f"/achievements/{achievement_id}", json={**VALID_ACHIEVEMENT, "text": ""}
+    )
+
+    assert update_response.status_code == 422
+
+
+# --- DELETE /achievements/{achievement_id} ---
+def test_delete_achievement_returns_204():
+    create_response = client.post("/experiences", json=VALID_EXPERIENCE)
+
+    assert create_response.status_code == 201
+    experience_id = create_response.json()["id"]
+
+    achievement_response = client.post(
+        f"/experiences/{experience_id}/achievements", json=VALID_ACHIEVEMENT
+    )
+
+    assert achievement_response.status_code == 201
+    achievement_id = achievement_response.json()["id"]
+
+    delete_response = client.delete(f"/achievements/{achievement_id}")
+
+    assert delete_response.status_code == 204
+    assert delete_response.content == b""
+
+    get_response = client.get(f"/achievements/{achievement_id}")
+
+    assert get_response.status_code == 404
+
+
+def test_delete_achievement_returns_404_when_not_found():
+    achievement_id = uuid.uuid4()
+    delete_response = client.delete(f"/achievements/{achievement_id}")
+
+    assert delete_response.status_code == 404
+    assert delete_response.json()["detail"] == "Achievement not found"
+
+
+def test_delete_achievement_with_invalid_id_returns_422():
+    delete_response = client.delete("/achievements/abc")
+
+    assert delete_response.status_code == 422
