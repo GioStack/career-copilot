@@ -4,12 +4,11 @@ How tests are written in this project. Older tests may not follow every naming r
 names are fixed when a test is changed for another reason.
 
 ## Running the tests
-From `backend/`, before every commit:
+Before every commit, from any folder in the repo:
 
-    uv run ruff format .
-    uv run ruff check --fix .
-    uv run pytest
+    just check
 
+It runs `ruff format`, `ruff check --fix` and `pytest` in `backend/` (see the `justfile`).
 CI runs the same checks without fixing anything (ADR 0012).
 
 ## What to test
