@@ -64,3 +64,20 @@ def get_achievement(
         raise HTTPException(status_code=404, detail="Achievement not found")
 
     return AchievementRead.model_validate(achievement_orm)
+
+
+@router.put("/achievements/{achievement_id}")
+def update_achievement(
+    achievement_id: uuid.UUID, achievement: Achievement, db: Annotated[Session, Depends(get_db)]
+) -> AchievementRead:
+    """Replace the text of an achievement; its position stays the same. 404 if it does not exist."""
+    achievement_orm = db.get(AchievementORM, achievement_id)
+    if achievement_orm is None:
+        raise HTTPException(status_code=404, detail="Achievement not found")
+
+    # PUT replaces every field from the request; position is not part of it.
+    for field, value in achievement.model_dump().items():
+        setattr(achievement_orm, field, value)
+    db.commit()
+    db.refresh(achievement_orm)
+    return AchievementRead.model_validate(achievement_orm)
