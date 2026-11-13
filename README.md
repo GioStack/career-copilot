@@ -75,7 +75,7 @@ Requires Docker, [uv](https://docs.astral.sh/uv/) and [just](https://just.system
 cp backend/.env.example backend/.env    # then set your own password
 just up       # start PostgreSQL and apply the migrations
 just dev      # run the API; docs at http://127.0.0.1:8000/docs
-just check    # format, lint and test
+just check    # lint, format and test
 ```
 
 Run `just` to list all commands.

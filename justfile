@@ -10,13 +10,13 @@ default:
 up: db
     uv run alembic upgrade head
 
-# Format, lint and test the backend.
+# Lint, format and test the backend.
 [working-directory('backend')]
 check:
-    uv run ruff format .
     uv run ruff check --fix .
+    uv run ruff format .
     uv run pytest
-
+    
 # Run the API with auto-reload.
 [working-directory('backend')]
 dev:
