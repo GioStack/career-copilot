@@ -1,6 +1,7 @@
 from typing import Annotated
 
 from fastapi import APIRouter, Depends
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from career_copilot.core.database import get_db
@@ -18,3 +19,10 @@ def create_language(language: Language, db: Annotated[Session, Depends(get_db)])
     db.commit()
     db.refresh(language_orm)
     return LanguageRead.model_validate(language_orm)
+
+
+@router.get("")
+def list_languages(db: Annotated[Session, Depends(get_db)]) -> list[LanguageRead]:
+    """Return all languages."""
+    languages = db.scalars(select(LanguageORM)).all()
+    return [LanguageRead.model_validate(language_orm) for language_orm in languages]

@@ -46,3 +46,15 @@ def test_create_language_with_empty_name_returns_422():
     create_response = client.post("/languages", json={**VALID_LANGUAGE, "name": ""})
 
     assert create_response.status_code == 422
+
+
+# --- GET /languages ---
+def test_list_languages_returns_created_languages():
+    create_response = client.post("/languages", json=VALID_LANGUAGE)
+
+    assert create_response.status_code == 201
+
+    get_response = client.get("/languages")
+
+    assert get_response.status_code == 200
+    assert [language["name"] for language in get_response.json()] == [VALID_LANGUAGE["name"]]
