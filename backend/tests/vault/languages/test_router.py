@@ -1,3 +1,5 @@
+import uuid
+
 from fastapi.testclient import TestClient
 
 from career_copilot.main import app
@@ -58,3 +60,31 @@ def test_list_languages_returns_created_languages():
 
     assert get_response.status_code == 200
     assert [language["name"] for language in get_response.json()] == [VALID_LANGUAGE["name"]]
+
+
+# --- GET /languages/{language_id} ---
+def test_get_language_returns_200():
+    create_response = client.post("/languages", json=VALID_LANGUAGE)
+
+    assert create_response.status_code == 201
+    language_id = create_response.json()["id"]
+
+    get_response = client.get(f"/languages/{language_id}")
+
+    assert get_response.status_code == 200
+    assert get_response.json()["name"] == VALID_LANGUAGE["name"]
+    assert get_response.json()["level"] == VALID_LANGUAGE["level"]
+
+
+def test_get_language_returns_404_when_not_found():
+    language_id = uuid.uuid4()
+    get_response = client.get(f"/languages/{language_id}")
+
+    assert get_response.status_code == 404
+    assert get_response.json()["detail"] == "Language not found"
+
+
+def test_get_language_with_invalid_id_returns_422():
+    get_response = client.get("/languages/abc")
+
+    assert get_response.status_code == 422

@@ -1,6 +1,7 @@
+import uuid
 from typing import Annotated
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -26,3 +27,13 @@ def list_languages(db: Annotated[Session, Depends(get_db)]) -> list[LanguageRead
     """Return all languages."""
     languages = db.scalars(select(LanguageORM)).all()
     return [LanguageRead.model_validate(language_orm) for language_orm in languages]
+
+
+@router.get("/{language_id}")
+def get_language(language_id: uuid.UUID, db: Annotated[Session, Depends(get_db)]) -> LanguageRead:
+    """Return one language by id, or 404 if it does not exist."""
+    language_orm = db.get(LanguageORM, language_id)
+    if language_orm is None:
+        raise HTTPException(status_code=404, detail="Language not found")
+
+    return LanguageRead.model_validate(language_orm)
