@@ -6,6 +6,7 @@ from sqlalchemy import engine_from_config, pool
 # Importing the models registers their tables in Base.metadata.
 import career_copilot.vault.achievements.models  # noqa: F401
 import career_copilot.vault.experience.models  # noqa: F401
+import career_copilot.vault.languages.models  # noqa: F401
 import career_copilot.vault.profile.models  # noqa: F401
 import career_copilot.vault.skills.models  # noqa: F401
 from career_copilot.core.config import settings
