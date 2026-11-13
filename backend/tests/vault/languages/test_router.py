@@ -88,3 +88,49 @@ def test_get_language_with_invalid_id_returns_422():
     get_response = client.get("/languages/abc")
 
     assert get_response.status_code == 422
+
+
+# --- PUT /languages/{language_id} ---
+def test_update_language_returns_200():
+    create_response = client.post("/languages", json=VALID_LANGUAGE)
+
+    assert create_response.status_code == 201
+    language_id = create_response.json()["id"]
+
+    update_response = client.put(
+        f"/languages/{language_id}", json={**VALID_LANGUAGE, "level": "C2"}
+    )
+
+    assert update_response.status_code == 200
+    assert update_response.json()["level"] == "C2"
+
+    get_response = client.get(f"/languages/{language_id}")
+
+    assert get_response.json()["level"] == "C2"
+
+
+def test_update_language_returns_404_when_not_found():
+    language_id = uuid.uuid4()
+    update_response = client.put(f"/languages/{language_id}", json=VALID_LANGUAGE)
+
+    assert update_response.status_code == 404
+    assert update_response.json()["detail"] == "Language not found"
+
+
+def test_update_language_with_invalid_id_returns_422():
+    update_response = client.put("/languages/abc", json=VALID_LANGUAGE)
+
+    assert update_response.status_code == 422
+
+
+def test_update_language_with_unknown_level_returns_422():
+    create_response = client.post("/languages", json=VALID_LANGUAGE)
+
+    assert create_response.status_code == 201
+    language_id = create_response.json()["id"]
+
+    update_response = client.put(
+        f"/languages/{language_id}", json={**VALID_LANGUAGE, "level": "Fluent"}
+    )
+
+    assert update_response.status_code == 422

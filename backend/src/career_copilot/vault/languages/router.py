@@ -37,3 +37,20 @@ def get_language(language_id: uuid.UUID, db: Annotated[Session, Depends(get_db)]
         raise HTTPException(status_code=404, detail="Language not found")
 
     return LanguageRead.model_validate(language_orm)
+
+
+@router.put("/{language_id}")
+def update_language(
+    language_id: uuid.UUID, language: Language, db: Annotated[Session, Depends(get_db)]
+) -> LanguageRead:
+    """Replace a language's fields, or 404 if it does not exist."""
+    language_orm = db.get(LanguageORM, language_id)
+    if language_orm is None:
+        raise HTTPException(status_code=404, detail="Language not found")
+
+    # PUT replaces every field with the values from the request.
+    for field, value in language.model_dump().items():
+        setattr(language_orm, field, value)
+    db.commit()
+    db.refresh(language_orm)
+    return LanguageRead.model_validate(language_orm)
