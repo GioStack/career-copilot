@@ -134,3 +134,34 @@ def test_update_language_with_unknown_level_returns_422():
     )
 
     assert update_response.status_code == 422
+
+
+# --- DELETE /languages/{language_id} ---
+def test_delete_language_returns_204():
+    create_response = client.post("/languages", json=VALID_LANGUAGE)
+
+    assert create_response.status_code == 201
+    language_id = create_response.json()["id"]
+
+    delete_response = client.delete(f"/languages/{language_id}")
+
+    assert delete_response.status_code == 204
+    assert delete_response.content == b""
+
+    get_response = client.get(f"/languages/{language_id}")
+
+    assert get_response.status_code == 404
+
+
+def test_delete_language_returns_404_when_not_found():
+    language_id = uuid.uuid4()
+    delete_response = client.delete(f"/languages/{language_id}")
+
+    assert delete_response.status_code == 404
+    assert delete_response.json()["detail"] == "Language not found"
+
+
+def test_delete_language_with_invalid_id_returns_422():
+    delete_response = client.delete("/languages/abc")
+
+    assert delete_response.status_code == 422

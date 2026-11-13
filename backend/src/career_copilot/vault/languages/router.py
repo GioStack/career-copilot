@@ -54,3 +54,13 @@ def update_language(
     db.commit()
     db.refresh(language_orm)
     return LanguageRead.model_validate(language_orm)
+
+
+@router.delete("/{language_id}", status_code=204)
+def delete_language(language_id: uuid.UUID, db: Annotated[Session, Depends(get_db)]) -> None:
+    """Delete a language, or 404 if it does not exist."""
+    language_orm = db.get(LanguageORM, language_id)
+    if language_orm is None:
+        raise HTTPException(status_code=404, detail="Language not found")
+    db.delete(language_orm)
+    db.commit()
