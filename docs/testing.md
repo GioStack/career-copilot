@@ -8,7 +8,7 @@ Before every commit, from any folder in the repo:
 
     just check
 
-It runs `ruff format`, `ruff check --fix` and `pytest` in `backend/` (see the `justfile`).
+It runs `ruff check --fix`, `ruff format` and `pytest` in `backend/` (see the `justfile`).
 CI runs the same checks without fixing anything (ADR 0012).
 
 ## What to test
