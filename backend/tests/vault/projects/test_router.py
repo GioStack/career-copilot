@@ -208,3 +208,34 @@ def test_update_project_with_empty_name_returns_422():
     update_response = client.put(f"/projects/{project_id}", json={**VALID_PROJECT, "name": ""})
 
     assert update_response.status_code == 422
+
+
+# --- DELETE /projects/{project_id} ---
+def test_delete_project_returns_204():
+    create_response = client.post("/projects", json=VALID_PROJECT)
+
+    assert create_response.status_code == 201
+    project_id = create_response.json()["id"]
+
+    delete_response = client.delete(f"/projects/{project_id}")
+
+    assert delete_response.status_code == 204
+    assert delete_response.content == b""
+
+    get_response = client.get(f"/projects/{project_id}")
+
+    assert get_response.status_code == 404
+
+
+def test_delete_project_returns_404_when_not_found():
+    project_id = uuid.uuid4()
+    delete_response = client.delete(f"/projects/{project_id}")
+
+    assert delete_response.status_code == 404
+    assert delete_response.json()["detail"] == "Project not found"
+
+
+def test_delete_project_with_invalid_id_returns_422():
+    delete_response = client.delete("/projects/abc")
+
+    assert delete_response.status_code == 422

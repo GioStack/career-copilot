@@ -65,3 +65,13 @@ def update_project(
     db.refresh(project_orm)
 
     return ProjectRead.model_validate(project_orm)
+
+
+@router.delete("/{project_id}", status_code=204)
+def delete_project(project_id: uuid.UUID, db: Annotated[Session, Depends(get_db)]) -> None:
+    """Delete a project, or 404 if it does not exist."""
+    project_orm = db.get(ProjectORM, project_id)
+    if project_orm is None:
+        raise HTTPException(status_code=404, detail="Project not found")
+    db.delete(project_orm)
+    db.commit()
