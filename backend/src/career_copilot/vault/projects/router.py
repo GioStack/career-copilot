@@ -47,3 +47,21 @@ def get_project(project_id: uuid.UUID, db: Annotated[Session, Depends(get_db)]) 
         raise HTTPException(status_code=404, detail="Project not found")
 
     return ProjectRead.model_validate(project_orm)
+
+
+@router.put("/{project_id}")
+def update_project(
+    project_id: uuid.UUID, project: Project, db: Annotated[Session, Depends(get_db)]
+) -> ProjectRead:
+    """Replace a project's fields, or 404 if it does not exist."""
+    project_orm = db.get(ProjectORM, project_id)
+    if project_orm is None:
+        raise HTTPException(status_code=404, detail="Project not found")
+
+    # PUT replaces every field with the values from the request
+    for field, value in to_columns(project).items():
+        setattr(project_orm, field, value)
+    db.commit()
+    db.refresh(project_orm)
+
+    return ProjectRead.model_validate(project_orm)

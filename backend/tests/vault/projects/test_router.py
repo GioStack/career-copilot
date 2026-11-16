@@ -146,3 +146,65 @@ def test_get_project_with_invalid_id_returns_422():
     get_response = client.get("/projects/abc")
 
     assert get_response.status_code == 422
+
+
+# --- PUT /projects/{project_id} ---
+def test_update_project_returns_200():
+    create_response = client.post("/projects", json=VALID_PROJECT)
+
+    assert create_response.status_code == 201
+    project_id = create_response.json()["id"]
+
+    update_response = client.put(
+        f"/projects/{project_id}", json={**VALID_PROJECT, "description": "Updated summary"}
+    )
+
+    assert update_response.status_code == 200
+    assert update_response.json()["description"] == "Updated summary"
+
+    get_response = client.get(f"/projects/{project_id}")
+
+    assert get_response.json()["description"] == "Updated summary"
+
+
+def test_update_project_sets_url_to_none_when_not_sent():
+    create_response = client.post("/projects", json=VALID_PROJECT)
+
+    assert create_response.status_code == 201
+    project_id = create_response.json()["id"]
+
+    project = VALID_PROJECT.copy()
+    del project["url"]
+
+    update_response = client.put(f"/projects/{project_id}", json=project)
+
+    assert update_response.status_code == 200
+
+    get_response = client.get(f"/projects/{project_id}")
+
+    assert get_response.json()["url"] is None
+
+
+def test_update_project_returns_404_when_not_found():
+    project_id = uuid.uuid4()
+    update_response = client.put(f"/projects/{project_id}", json=VALID_PROJECT)
+
+    assert update_response.status_code == 404
+    assert update_response.json()["detail"] == "Project not found"
+
+
+def test_update_project_with_invalid_id_returns_422():
+    update_response = client.put("/projects/abc", json=VALID_PROJECT)
+
+    assert update_response.status_code == 422
+
+
+def test_update_project_with_empty_name_returns_422():
+    create_response = client.post("/projects", json=VALID_PROJECT)
+
+    assert create_response.status_code == 201
+    project_id = create_response.json()["id"]
+
+    update_response = client.put(f"/projects/{project_id}", json={**VALID_PROJECT, "name": ""})
+
+    assert update_response.status_code == 422
