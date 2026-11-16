@@ -98,3 +98,15 @@ def test_create_project_with_only_start_date_returns_201():
     create_response = client.post("/projects", json=project)
 
     assert create_response.status_code == 201
+
+
+# --- GET /projects ---
+def test_list_projects_returns_created_projects():
+    create_response = client.post("/projects", json=VALID_PROJECT)
+
+    assert create_response.status_code == 201
+
+    get_response = client.get("/projects")
+
+    assert get_response.status_code == 200
+    assert [project["name"] for project in get_response.json()] == [VALID_PROJECT["name"]]

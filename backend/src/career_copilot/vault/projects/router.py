@@ -1,6 +1,7 @@
 from typing import Annotated
 
 from fastapi import APIRouter, Depends
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from career_copilot.core.database import get_db
@@ -28,3 +29,10 @@ def create_project(project: Project, db: Annotated[Session, Depends(get_db)]) ->
     # Load the saved row explicitly, including any values set by the database.
     db.refresh(project_orm)
     return ProjectRead.model_validate(project_orm)
+
+
+@router.get("")
+def list_projects(db: Annotated[Session, Depends(get_db)]) -> list[ProjectRead]:
+    """Return all projects."""
+    projects = db.scalars(select(ProjectORM)).all()
+    return [ProjectRead.model_validate(project_orm) for project_orm in projects]
