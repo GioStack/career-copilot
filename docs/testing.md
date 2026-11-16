@@ -8,6 +8,14 @@ Before every commit, from any folder in the repo:
 
     just check
 
+It runs `just lint` (`ruff check --fix`, `ruff format`, then `ruff check` to confirm nothing is left)
+and `just test` (`pytest`) in `backend/` (see the `justfile`).
+To run only some tests, pass a path inside `backend/`:
+
+    just test tests/vault/projects
+
+CI runs the same checks without fixing anything (ADR 0012).
+
 It runs `ruff check --fix`, `ruff format` and `pytest` in `backend/` (see the `justfile`).
 CI runs the same checks without fixing anything (ADR 0012).
 
