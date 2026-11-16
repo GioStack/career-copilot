@@ -25,8 +25,11 @@ def test_create_experience_with_valid_data():
     data = create_response.json()
 
     assert data["title"] == VALID_EXPERIENCE["title"]
+    assert data["company"] == VALID_EXPERIENCE["company"]
+    assert data["location"] == VALID_EXPERIENCE["location"]
     assert data["start_date"] == VALID_EXPERIENCE["start_date"]
     assert data["end_date"] == VALID_EXPERIENCE["end_date"]
+    assert data["description"] == VALID_EXPERIENCE["description"]
     assert "id" in data
 
 

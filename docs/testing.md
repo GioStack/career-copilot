@@ -30,7 +30,7 @@ inside a transaction that is rolled back at the end, so every test starts with e
 Test data is fake: `example.com` emails, "Example Co" companies.
 
 ## Tests for each endpoint
-- **Success:** the expected status and the fields that matter.
+- **Success:** the expected status and the fields in *Which fields to check* below.
 - **Not found:** `404`, and the `detail` message, so it is our 404 and not the framework's.
 - **Invalid id:** `422` for an id that is not a UUID (e.g. `/experiences/abc`).
 - **Invalid body:** one `422` test per validation rule, on POST.
@@ -39,6 +39,18 @@ Test data is fake: `example.com` emails, "Example Co" companies.
 - **PUT replaces:** an optional field that is not sent becomes `null`.
 - **Changes are saved:** PUT and DELETE are checked with a separate GET in the same test.
   POST is checked by the GET tests.
+
+## Which fields to check
+- **Create with valid data:** every field that was sent, compared with what was sent.
+- **Create without optional fields:** every field that was not sent is `null`.
+- **Get one:** every field, so a separate request proves that all of them were saved.
+- **List:** one field that identifies the item, such as `name`.
+- **Update:** the field that changed, then the same field with a separate GET.
+- **Update that leaves out an optional field:** that field is `null`.
+- **Validation, `404` and invalid id:** the status code, plus `detail` for our own `404`.
+- **Delete:** `204`, an empty body, then `404` from a GET.
+
+Each field can break on its own, so one field passing proves nothing about the others.
 
 ## Structure of a test
 1. **Setup:** create what the test needs, and assert the status (e.g. `201`),
