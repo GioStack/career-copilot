@@ -8,6 +8,7 @@ import career_copilot.vault.achievements.models  # noqa: F401
 import career_copilot.vault.experience.models  # noqa: F401
 import career_copilot.vault.languages.models  # noqa: F401
 import career_copilot.vault.profile.models  # noqa: F401
+import career_copilot.vault.projects.models  # noqa: F401
 import career_copilot.vault.skills.models  # noqa: F401
 from career_copilot.core.config import settings
 from career_copilot.core.database import Base

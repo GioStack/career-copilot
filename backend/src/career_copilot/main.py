@@ -4,6 +4,7 @@ from career_copilot.vault.achievements.router import router as achievements_rout
 from career_copilot.vault.experience.router import router as experience_router
 from career_copilot.vault.languages.router import router as languages_router
 from career_copilot.vault.profile.router import router as profile_router
+from career_copilot.vault.projects.router import router as projects_router
 from career_copilot.vault.skills.router import router as skills_router
 
 app = FastAPI(title="Career Copilot")
@@ -12,6 +13,7 @@ app.include_router(achievements_router)
 app.include_router(skills_router)
 app.include_router(profile_router)
 app.include_router(languages_router)
+app.include_router(projects_router)
 
 
 @app.get("/health")
