@@ -1,3 +1,5 @@
+import uuid
+
 from fastapi.testclient import TestClient
 
 from career_copilot.main import app
@@ -110,3 +112,37 @@ def test_list_projects_returns_created_projects():
 
     assert get_response.status_code == 200
     assert [project["name"] for project in get_response.json()] == [VALID_PROJECT["name"]]
+
+
+# --- GET /projects/{project_id} ---
+def test_get_project_returns_200():
+    create_response = client.post("/projects", json=VALID_PROJECT)
+
+    assert create_response.status_code == 201
+    project_id = create_response.json()["id"]
+
+    get_response = client.get(f"/projects/{project_id}")
+
+    assert get_response.status_code == 200
+
+    data = get_response.json()
+
+    assert data["name"] == VALID_PROJECT["name"]
+    assert data["description"] == VALID_PROJECT["description"]
+    assert data["url"] == VALID_PROJECT["url"]
+    assert data["start_date"] == VALID_PROJECT["start_date"]
+    assert data["end_date"] == VALID_PROJECT["end_date"]
+
+
+def test_get_project_returns_404_when_not_found():
+    project_id = uuid.uuid4()
+    get_response = client.get(f"/projects/{project_id}")
+
+    assert get_response.status_code == 404
+    assert get_response.json()["detail"] == "Project not found"
+
+
+def test_get_project_with_invalid_id_returns_422():
+    get_response = client.get("/projects/abc")
+
+    assert get_response.status_code == 422

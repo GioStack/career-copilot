@@ -1,6 +1,7 @@
+import uuid
 from typing import Annotated
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -36,3 +37,13 @@ def list_projects(db: Annotated[Session, Depends(get_db)]) -> list[ProjectRead]:
     """Return all projects."""
     projects = db.scalars(select(ProjectORM)).all()
     return [ProjectRead.model_validate(project_orm) for project_orm in projects]
+
+
+@router.get("/{project_id}")
+def get_project(project_id: uuid.UUID, db: Annotated[Session, Depends(get_db)]) -> ProjectRead:
+    """Return one project by id, or 404 if it does not exist."""
+    project_orm = db.get(ProjectORM, project_id)
+    if project_orm is None:
+        raise HTTPException(status_code=404, detail="Project not found")
+
+    return ProjectRead.model_validate(project_orm)
