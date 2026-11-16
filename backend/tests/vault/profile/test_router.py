@@ -26,11 +26,19 @@ def test_put_profile_creates_profile():
     update_response = client.put("/profile", json=VALID_PROFILE)
 
     assert update_response.status_code == 200
-    assert update_response.json()["full_name"] == VALID_PROFILE["full_name"]
-    assert update_response.json()["email"] == VALID_PROFILE["email"]
-    assert update_response.json()["birth_date"] == VALID_PROFILE["birth_date"]
-    assert update_response.json()["linkedin_url"] == VALID_PROFILE["linkedin_url"]
-    assert update_response.json()["phone"] is None
+
+    data = update_response.json()
+
+    assert data["full_name"] == VALID_PROFILE["full_name"]
+    assert data["headline"] == VALID_PROFILE["headline"]
+    assert data["email"] == VALID_PROFILE["email"]
+    assert data["birth_date"] == VALID_PROFILE["birth_date"]
+    assert data["linkedin_url"] == VALID_PROFILE["linkedin_url"]
+    assert data["github_url"] == VALID_PROFILE["github_url"]
+    assert data["phone"] is None
+    assert data["location"] is None
+    assert data["about"] is None
+    assert data["portfolio_url"] is None
 
     get_response = client.get("/profile")
 
