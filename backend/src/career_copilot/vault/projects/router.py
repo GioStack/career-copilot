@@ -1,0 +1,30 @@
+from typing import Annotated
+
+from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
+
+from career_copilot.core.database import get_db
+from career_copilot.vault.projects.models import ProjectORM
+from career_copilot.vault.projects.schemas import Project, ProjectRead
+
+router = APIRouter(prefix="/projects", tags=["projects"])
+
+
+def to_columns(project: Project) -> dict[str, object]:
+    """Return the project's fields as column values for the database."""
+    columns = project.model_dump()
+    # The database has no URL type, so the URL is stored as text.
+    if columns["url"] is not None:
+        columns["url"] = str(columns["url"])
+    return columns
+
+
+@router.post("", status_code=201)
+def create_project(project: Project, db: Annotated[Session, Depends(get_db)]) -> ProjectRead:
+    """Create a project and return it with its generated id."""
+    project_orm = ProjectORM(**to_columns(project))
+    db.add(project_orm)
+    db.commit()
+    # Load the saved row explicitly, including any values set by the database.
+    db.refresh(project_orm)
+    return ProjectRead.model_validate(project_orm)
