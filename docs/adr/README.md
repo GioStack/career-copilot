@@ -23,3 +23,4 @@ ADRs are not edited after they are accepted; a new ADR refines or replaces an ol
 | [0015](0015-manage-the-schema-with-alembic-migrations.md) | Manage the database schema with Alembic migrations | Accepted |
 | [0016](0016-store-achievements-in-their-own-table.md) | Store achievements in their own table | Accepted |
 | [0017](0017-use-just-as-the-command-runner.md) | Use just as the command runner | Accepted |
+| [0018](0018-group-skills-in-the-prompt.md) | Group skills in the prompt, not in the database | Accepted |
