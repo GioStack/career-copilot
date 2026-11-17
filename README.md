@@ -14,7 +14,7 @@ Job seekers rewrite the same experience for every application. The facts stay th
 
 ```mermaid
 flowchart LR
-    A["Your career data<br/>profile, skills, experience,<br/>achievements, languages, projects"] --> B[("Career Vault<br/>PostgreSQL")]
+    A["Your career data<br/>profile, skills, experience,<br/>achievements, languages,<br/>projects, education"] --> B[("Career Vault<br/>PostgreSQL")]
     J["Job posting"] --> C["LLM<br/>your own API key"]
     B --> C
     C --> D["Tailored CV"]
@@ -33,10 +33,10 @@ Solid boxes work today. Dashed boxes are next.
 
 | Works today | Coming next |
 |---|---|
-| Career Vault API: profile, skills, experience, achievements, languages, projects | Education, skill categories |
-| Input validation (Pydantic) | **Tailoring engine**: CV, summary, cover letter |
-| Database migrations (Alembic), checked in CI | React frontend |
-| 100+ tests on a separate test database | Interview preparation |
+| Career Vault API: profile, skills, experience, achievements, languages, projects, education | **Tailoring engine**: CV, summary, cover letter |
+| Input validation (Pydantic) | React frontend |
+| Database migrations (Alembic), checked in CI | Interview preparation |
+| 100+ tests on a separate test database | |
 | CI on every pull request (GitHub Actions) | |
 | One command to start or check everything (`just`) | |
 
@@ -56,7 +56,7 @@ Every decision is explained in [`docs/adr/`](docs/adr/).
 
 ```mermaid
 flowchart LR
-    A["SQLite<br/>skills API"] --> B["Profile &<br/>experience"] --> C["CI with<br/>GitHub Actions"] --> D["PostgreSQL<br/>in Docker"] --> E["Alembic<br/>migrations"] --> F["Achievements,<br/>languages, projects"]
+    A["SQLite<br/>skills API"] --> B["Profile &<br/>experience"] --> C["CI with<br/>GitHub Actions"] --> D["PostgreSQL<br/>in Docker"] --> E["Alembic<br/>migrations"] --> F["Achievements,<br/>languages, projects"] --> G["Education"]
 ```
 
 I started with SQLite for zero setup, then moved to PostgreSQL once the AI plans needed vector search ([ADR 0014](docs/adr/0014-use-postgresql-in-docker.md)).
@@ -65,23 +65,4 @@ I started with SQLite for zero setup, then moved to PostgreSQL once the AI plans
 
 - API only for now: try it at `/docs`.
 - No AI features yet.
-- Single user, no login, by design for a local app.
-
-## Run it locally
-
-Requires Docker, [uv](https://docs.astral.sh/uv/) and [just](https://just.systems/) (`uv tool install rust-just`).
-
-```bash
-cp backend/.env.example backend/.env    # then set your own password
-just up       # start PostgreSQL and apply the migrations
-just dev      # run the API; docs at http://127.0.0.1:8000/docs
-just check    # lint, format and test
-```
-
-Run `just` to list all commands.
-
-How tests are written: [`docs/testing.md`](docs/testing.md)
-
-## Tech stack
-
-Python 3.12 · FastAPI · Pydantic v2 · SQLAlchemy 2 · PostgreSQL · Docker Compose · uv · just · pytest · ruff · GitHub Actions
+- Single user, no login, by design
