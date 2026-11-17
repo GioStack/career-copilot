@@ -16,9 +16,6 @@ To run only some tests, pass a path inside `backend/`:
 
 CI runs the same checks without fixing anything (ADR 0012).
 
-It runs `ruff check --fix`, `ruff format` and `pytest` in `backend/` (see the `justfile`).
-CI runs the same checks without fixing anything (ADR 0012).
-
 ## What to test
 Every test must catch a realistic mistake that no other test catches.
 A test that only repeats what another test already covers is not added.
@@ -36,6 +33,8 @@ Test data is fake: `example.com` emails, "Example Co" companies.
 - **Invalid body:** one `422` test per validation rule, on POST.
   PUT uses the same schema, so one invalid-body test is enough there.
 - **Boundaries:** both the valid limits (e.g. `level` 1 and 5) and the invalid ones (0 and 6+).
+- **List:** one test that creates two items and checks both are returned.
+  If the list is sorted, the items are created in the wrong order and the test checks the order.
 - **PUT replaces:** an optional field that is not sent becomes `null`.
 - **Changes are saved:** PUT and DELETE are checked with a separate GET in the same test.
   POST is checked by the GET tests.
