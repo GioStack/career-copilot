@@ -1,6 +1,7 @@
 import pytest
 from alembic import command
 from alembic.config import Config
+from pydantic_ai import models
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
@@ -8,6 +9,9 @@ from sqlalchemy.orm import Session
 from career_copilot.core.config import settings
 from career_copilot.core.database import get_db
 from career_copilot.main import app
+
+# Tests never call a real LLM (ADR 0019).
+models.ALLOW_MODEL_REQUESTS = False
 
 
 class TestSettings(BaseSettings):
