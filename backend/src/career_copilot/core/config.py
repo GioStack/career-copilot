@@ -4,7 +4,7 @@ from pydantic import SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 # Providers supported by Pydantic AI that the app accepts (ADR 0019).
-LLMProvider = Literal["anthropic", "google", "groq", "mistral", "ollama", "openai"]
+LLMProvider = Literal["anthropic", "google", "groq", "mistral", "ollama", "openai", "openrouter"]
 
 
 class Settings(BaseSettings):
