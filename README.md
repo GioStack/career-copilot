@@ -33,8 +33,9 @@ Solid boxes work today. Dashed boxes are next.
 
 | Works today | Coming next |
 |---|---|
-| Career Vault API: profile, skills, experience, achievements, languages, projects, education | **Tailoring engine**: CV, summary, cover letter |
-| Input validation (Pydantic) | React frontend |
+| Career Vault API: profile, skills, experience, achievements, languages, projects, education | React frontend |
+| LLM connection for any supported provider (Pydantic AI) | CV upload that fills the vault |
+| Input validation (Pydantic) | **Tailoring engine**: CV, summary, cover letter |
 | Database migrations (Alembic), checked in CI | Interview preparation |
 | 100+ tests on a separate test database | |
 | CI on every pull request (GitHub Actions) | |
@@ -49,6 +50,7 @@ Solid boxes work today. Dashed boxes are next.
 | **Alembic migrations, run outside the app** | Schema changes keep the data; CI fails if a model has no migration | One more step before starting the app |
 | **UUID ids** | Data can move between machines without id clashes | Harder to read while debugging |
 | **Tests through the API** | Tests check what the client actually receives | Slower than testing schemas directly |
+| **Pydantic AI for the LLM** | Any supported provider with one set of settings; answers are checked against schemas | Larger install; a major-version upgrade is expected |
 
 Every decision is explained in [`docs/adr/`](docs/adr/).
 
@@ -56,7 +58,7 @@ Every decision is explained in [`docs/adr/`](docs/adr/).
 
 ```mermaid
 flowchart LR
-    A["SQLite<br/>skills API"] --> B["Profile &<br/>experience"] --> C["CI with<br/>GitHub Actions"] --> D["PostgreSQL<br/>in Docker"] --> E["Alembic<br/>migrations"] --> F["Achievements,<br/>languages, projects"] --> G["Education"]
+    A["SQLite<br/>skills API"] --> B["Profile &<br/>experience"] --> C["CI with<br/>GitHub Actions"] --> D["PostgreSQL<br/>in Docker"] --> E["Alembic<br/>migrations"] --> F["Achievements,<br/>languages, projects"] --> G["Education"] --> H["LLM connection<br/>(Pydantic AI)"]
 ```
 
 I started with SQLite for zero setup, then moved to PostgreSQL once the AI plans needed vector search ([ADR 0014](docs/adr/0014-use-postgresql-in-docker.md)).
@@ -64,5 +66,25 @@ I started with SQLite for zero setup, then moved to PostgreSQL once the AI plans
 ## Limitations
 
 - API only for now: try it at `/docs`.
-- No AI features yet.
-- Single user, no login, by design
+- The LLM connection is in place, but no AI feature uses it yet.
+- Single user, no login, by design for a local app.
+
+## Run it locally
+
+Requires Docker, [uv](https://docs.astral.sh/uv/) and [just](https://just.systems/) (`uv tool install rust-just`).
+
+```bash
+cp backend/.env.example backend/.env    # then set your own password, and an LLM if you want one
+just up       # start PostgreSQL and apply the migrations
+just dev      # run the API; docs at http://127.0.0.1:8000/docs
+just check    # lint, format and test
+```
+
+Run `just` to list all commands.
+
+How tests are written: [`docs/testing.md`](docs/testing.md)
+
+## Tech stack
+
+Python 3.12 · FastAPI · Pydantic v2 · SQLAlchemy 2 · PostgreSQL · Pydantic AI · Docker Compose · uv · just · pytest · ruff · GitHub Actions
+
