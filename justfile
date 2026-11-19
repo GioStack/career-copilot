@@ -24,11 +24,28 @@ test *args:
 
 # Lint and test the backend.
 check: lint test
-    
+
 # Run the API with auto-reload.
 [working-directory('backend')]
 dev:
     uv run uvicorn career_copilot.main:app --reload
+
+# Install the frontend packages exactly as locked.
+[working-directory('frontend')]
+web-install:
+    npm ci
+
+# Run the frontend with hot reload.
+[working-directory('frontend')]
+web:
+    npm run dev
+
+# Fix, format, check and build the frontend.
+[working-directory('frontend')]
+web-check:
+    npm run format
+    npm run lint
+    npm run build
 
 # Start the database and wait until it is healthy.
 [private]
