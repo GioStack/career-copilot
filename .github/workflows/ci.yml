@@ -6,8 +6,8 @@ on:
     branches: [main]
 
 jobs:
-    checks:
-      name: Lint and test
+    backend:
+      name: Backend checks
       runs-on: ubuntu-latest
       services: 
         postgres:
