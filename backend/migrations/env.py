@@ -27,7 +27,9 @@ if config.config_file_name is not None:
 # unless the caller (for example the tests) has already set one.
 if not config.get_main_option("sqlalchemy.url"):
     # "%" is special in Alembic's config, so it is escaped as "%%".
-    config.set_main_option("sqlalchemy.url", settings.database_url.replace("%", "%%"))
+    config.set_main_option(
+        "sqlalchemy.url", settings.database_url.get_secret_value().replace("%", "%%")
+    )
 
 target_metadata = Base.metadata
 

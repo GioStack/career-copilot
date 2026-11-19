@@ -5,7 +5,7 @@ from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
 
 from career_copilot.core.config import settings
 
-engine = create_engine(settings.database_url)
+engine = create_engine(settings.database_url.get_secret_value())
 
 SessionLocal = sessionmaker(bind=engine)
 

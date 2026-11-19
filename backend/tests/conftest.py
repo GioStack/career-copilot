@@ -1,6 +1,7 @@
 import pytest
 from alembic import command
 from alembic.config import Config
+from pydantic import SecretStr
 from pydantic_ai import models
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from sqlalchemy import create_engine
@@ -19,16 +20,16 @@ class TestSettings(BaseSettings):
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
-    test_database_url: str
+    test_database_url: SecretStr
 
 
 test_settings = TestSettings()
 
 # The tests drop every table after each test, so they must never use the app database.
-if test_settings.test_database_url == settings.database_url:
+if test_settings.test_database_url.get_secret_value() == settings.database_url.get_secret_value():
     raise RuntimeError("TEST_DATABASE_URL must point to a different database than DATABASE_URL")
 
-test_engine = create_engine(test_settings.test_database_url)
+test_engine = create_engine(test_settings.test_database_url.get_secret_value())
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -36,7 +37,9 @@ def migrated_database():
     """Build the test database with the migrations, once per test run (ADR 0015)."""
     config = Config("alembic.ini")
     # "%" is special in Alembic's config, so it is escaped as "%%".
-    config.set_main_option("sqlalchemy.url", test_settings.test_database_url.replace("%", "%%"))
+    config.set_main_option(
+        "sqlalchemy.url", test_settings.test_database_url.get_secret_value().replace("%", "%%")
+    )
     # Start from an empty schema, so the run always uses the current migrations.
     command.downgrade(config, "base")
     command.upgrade(config, "head")

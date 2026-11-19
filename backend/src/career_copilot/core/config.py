@@ -13,7 +13,7 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
     # Required: there is no default database (see ADR 0014).
-    database_url: str
+    database_url: SecretStr
 
     # Optional: the vault works without an LLM; only the AI features need it.
     llm_provider: LLMProvider | None = None
