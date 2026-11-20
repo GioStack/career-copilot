@@ -25,4 +25,5 @@ ADRs are not edited after they are accepted; a new ADR refines or replaces an ol
 | [0017](0017-use-just-as-the-command-runner.md) | Use just as the command runner | Accepted |
 | [0018](0018-group-skills-in-the-prompt.md) | Group skills in the prompt, not in the database | Accepted |
 | [0019](0019-connect-to-llms-with-pydantic-ai.md) | Connect to LLMs with Pydantic AI | Accepted |
-| [0020](0020-build-the-frontend-with-react-and-vite.md) | Build the frontend with React and Vite | Accepted |
+| [0020](0020-build-the-frontend-with-react-and-vite.md) | Build the frontend with React and Vite | Accepted, refined by 0021 |
+| [0021](0021-serve-the-api-under-api-behind-a-proxy.md) | Serve the API under /api behind a proxy | Accepted |
