@@ -19,7 +19,7 @@ VALID_EDUCATION = {
 
 # --- POST /education ---
 def test_create_education_with_valid_data():
-    create_response = client.post("/education", json=VALID_EDUCATION)
+    create_response = client.post("/api/education", json=VALID_EDUCATION)
 
     assert create_response.status_code == 201
 
@@ -42,7 +42,7 @@ def test_create_education_without_optional_fields_returns_201():
     del education["grade"]
     del education["description"]
 
-    create_response = client.post("/education", json=education)
+    create_response = client.post("/api/education", json=education)
 
     assert create_response.status_code == 201
 
@@ -55,13 +55,13 @@ def test_create_education_without_optional_fields_returns_201():
 
 
 def test_create_education_with_empty_institution_returns_422():
-    create_response = client.post("/education", json={**VALID_EDUCATION, "institution": ""})
+    create_response = client.post("/api/education", json={**VALID_EDUCATION, "institution": ""})
 
     assert create_response.status_code == 422
 
 
 def test_create_education_with_empty_degree_returns_422():
-    create_response = client.post("/education", json={**VALID_EDUCATION, "degree": ""})
+    create_response = client.post("/api/education", json={**VALID_EDUCATION, "degree": ""})
 
     assert create_response.status_code == 422
 
@@ -70,39 +70,41 @@ def test_create_education_without_start_date_returns_422():
     education = VALID_EDUCATION.copy()
     del education["start_date"]
 
-    create_response = client.post("/education", json=education)
+    create_response = client.post("/api/education", json=education)
 
     assert create_response.status_code == 422
 
 
 def test_create_education_with_end_date_before_start_date_returns_422():
-    create_response = client.post("/education", json={**VALID_EDUCATION, "end_date": "2018-09-01"})
+    create_response = client.post(
+        "/api/education", json={**VALID_EDUCATION, "end_date": "2018-09-01"}
+    )
 
     assert create_response.status_code == 422
 
 
 def test_create_education_with_grade_0_returns_201():
-    create_response = client.post("/education", json={**VALID_EDUCATION, "grade": 0})
+    create_response = client.post("/api/education", json={**VALID_EDUCATION, "grade": 0})
 
     assert create_response.status_code == 201
     assert create_response.json()["grade"] == 0
 
 
 def test_create_education_with_grade_10_returns_201():
-    create_response = client.post("/education", json={**VALID_EDUCATION, "grade": 10})
+    create_response = client.post("/api/education", json={**VALID_EDUCATION, "grade": 10})
 
     assert create_response.status_code == 201
     assert create_response.json()["grade"] == 10
 
 
 def test_create_education_with_negative_grade_returns_422():
-    create_response = client.post("/education", json={**VALID_EDUCATION, "grade": -0.1})
+    create_response = client.post("/api/education", json={**VALID_EDUCATION, "grade": -0.1})
 
     assert create_response.status_code == 422
 
 
 def test_create_education_with_grade_above_10_returns_422():
-    create_response = client.post("/education", json={**VALID_EDUCATION, "grade": 10.1})
+    create_response = client.post("/api/education", json={**VALID_EDUCATION, "grade": 10.1})
 
     assert create_response.status_code == 422
 
@@ -113,10 +115,10 @@ def test_list_education_returns_most_recent_first():
     newer = VALID_EDUCATION
 
     # Create the older entry first, so the test fails if the list is not sorted.
-    assert client.post("/education", json=older).status_code == 201
-    assert client.post("/education", json=newer).status_code == 201
+    assert client.post("/api/education", json=older).status_code == 201
+    assert client.post("/api/education", json=newer).status_code == 201
 
-    get_response = client.get("/education")
+    get_response = client.get("/api/education")
 
     assert get_response.status_code == 200
 
@@ -129,13 +131,13 @@ def test_list_education_returns_most_recent_first():
 
 # --- GET /education/{id} ---
 def test_get_education_by_id_returns_education():
-    create_response = client.post("/education", json=VALID_EDUCATION)
+    create_response = client.post("/api/education", json=VALID_EDUCATION)
 
     assert create_response.status_code == 201
 
     education_id = create_response.json()["id"]
 
-    get_response = client.get(f"/education/{education_id}")
+    get_response = client.get(f"/api/education/{education_id}")
 
     assert get_response.status_code == 200
 
@@ -154,28 +156,28 @@ def test_get_education_by_id_returns_education():
 def test_get_education_by_id_returns_404_when_not_found():
     education_id = uuid.uuid4()
 
-    get_response = client.get(f"/education/{education_id}")
+    get_response = client.get(f"/api/education/{education_id}")
 
     assert get_response.status_code == 404
     assert get_response.json()["detail"] == "Education not found"
 
 
 def test_get_education_by_id_returns_422_when_id_is_invalid():
-    get_response = client.get("/education/abc")
+    get_response = client.get("/api/education/abc")
 
     assert get_response.status_code == 422
 
 
 # --- PUT /education/{id} ---
 def test_update_education_returns_updated_education():
-    create_response = client.post("/education", json=VALID_EDUCATION)
+    create_response = client.post("/api/education", json=VALID_EDUCATION)
 
     assert create_response.status_code == 201
 
     education_id = create_response.json()["id"]
 
     update_response = client.put(
-        f"/education/{education_id}",
+        f"/api/education/{education_id}",
         json={**VALID_EDUCATION, "degree": "MSc in Computer Engineering"},
     )
 
@@ -186,13 +188,13 @@ def test_update_education_returns_updated_education():
     assert data["id"] == education_id
     assert data["degree"] == "MSc in Computer Engineering"
 
-    get_response = client.get(f"/education/{education_id}")
+    get_response = client.get(f"/api/education/{education_id}")
 
     assert get_response.json()["degree"] == "MSc in Computer Engineering"
 
 
 def test_update_education_sets_grade_to_none_when_not_sent():
-    create_response = client.post("/education", json=VALID_EDUCATION)
+    create_response = client.post("/api/education", json=VALID_EDUCATION)
 
     assert create_response.status_code == 201
 
@@ -201,12 +203,12 @@ def test_update_education_sets_grade_to_none_when_not_sent():
     education = VALID_EDUCATION.copy()
     del education["grade"]
 
-    update_response = client.put(f"/education/{education_id}", json=education)
+    update_response = client.put(f"/api/education/{education_id}", json=education)
 
     assert update_response.status_code == 200
     assert update_response.json()["grade"] is None
 
-    get_response = client.get(f"/education/{education_id}")
+    get_response = client.get(f"/api/education/{education_id}")
 
     assert get_response.json()["grade"] is None
 
@@ -214,27 +216,27 @@ def test_update_education_sets_grade_to_none_when_not_sent():
 def test_update_education_returns_404_when_not_found():
     education_id = uuid.uuid4()
 
-    update_response = client.put(f"/education/{education_id}", json=VALID_EDUCATION)
+    update_response = client.put(f"/api/education/{education_id}", json=VALID_EDUCATION)
 
     assert update_response.status_code == 404
     assert update_response.json()["detail"] == "Education not found"
 
 
 def test_update_education_returns_422_when_id_is_invalid():
-    update_response = client.put("/education/abc", json=VALID_EDUCATION)
+    update_response = client.put("/api/education/abc", json=VALID_EDUCATION)
 
     assert update_response.status_code == 422
 
 
 def test_update_education_returns_422_when_body_is_invalid():
-    create_response = client.post("/education", json=VALID_EDUCATION)
+    create_response = client.post("/api/education", json=VALID_EDUCATION)
 
     assert create_response.status_code == 201
 
     education_id = create_response.json()["id"]
 
     update_response = client.put(
-        f"/education/{education_id}", json={**VALID_EDUCATION, "end_date": "2018-09-01"}
+        f"/api/education/{education_id}", json={**VALID_EDUCATION, "end_date": "2018-09-01"}
     )
 
     assert update_response.status_code == 422
@@ -242,18 +244,18 @@ def test_update_education_returns_422_when_body_is_invalid():
 
 # --- DELETE /education/{id} ---
 def test_delete_education_returns_204():
-    create_response = client.post("/education", json=VALID_EDUCATION)
+    create_response = client.post("/api/education", json=VALID_EDUCATION)
 
     assert create_response.status_code == 201
 
     education_id = create_response.json()["id"]
 
-    delete_response = client.delete(f"/education/{education_id}")
+    delete_response = client.delete(f"/api/education/{education_id}")
 
     assert delete_response.status_code == 204
     assert delete_response.content == b""
 
-    get_response = client.get(f"/education/{education_id}")
+    get_response = client.get(f"/api/education/{education_id}")
 
     assert get_response.status_code == 404
 
@@ -261,13 +263,13 @@ def test_delete_education_returns_204():
 def test_delete_education_returns_404_when_not_found():
     education_id = uuid.uuid4()
 
-    delete_response = client.delete(f"/education/{education_id}")
+    delete_response = client.delete(f"/api/education/{education_id}")
 
     assert delete_response.status_code == 404
     assert delete_response.json()["detail"] == "Education not found"
 
 
 def test_delete_education_returns_422_when_id_is_invalid():
-    delete_response = client.delete("/education/abc")
+    delete_response = client.delete("/api/education/abc")
 
     assert delete_response.status_code == 422

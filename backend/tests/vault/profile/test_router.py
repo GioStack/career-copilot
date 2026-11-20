@@ -16,14 +16,14 @@ VALID_PROFILE = {
 
 # --- GET /profile ---
 def test_get_profile_returns_404_when_not_created():
-    get_response = client.get("/profile")
+    get_response = client.get("/api/profile")
     assert get_response.status_code == 404
     assert get_response.json()["detail"] == "Profile not found"
 
 
 # --- PUT /profile ---
 def test_put_profile_creates_profile():
-    update_response = client.put("/profile", json=VALID_PROFILE)
+    update_response = client.put("/api/profile", json=VALID_PROFILE)
 
     assert update_response.status_code == 200
 
@@ -40,54 +40,60 @@ def test_put_profile_creates_profile():
     assert data["about"] is None
     assert data["portfolio_url"] is None
 
-    get_response = client.get("/profile")
+    get_response = client.get("/api/profile")
 
     assert get_response.status_code == 200
     assert get_response.json()["full_name"] == VALID_PROFILE["full_name"]
 
 
 def test_put_profile_replaces_existing_profile():
-    update_response = client.put("/profile", json=VALID_PROFILE)
+    update_response = client.put("/api/profile", json=VALID_PROFILE)
 
     assert update_response.status_code == 200
 
     profile_id = update_response.json()["id"]
 
-    new_response = client.put("/profile", json={**VALID_PROFILE, "headline": "Python Developer"})
+    new_response = client.put(
+        "/api/profile", json={**VALID_PROFILE, "headline": "Python Developer"}
+    )
 
     assert new_response.status_code == 200
     assert new_response.json()["headline"] == "Python Developer"
     assert new_response.json()["id"] == profile_id
 
-    get_response = client.get("/profile")
+    get_response = client.get("/api/profile")
 
     assert get_response.json()["headline"] == "Python Developer"
     assert get_response.json()["id"] == profile_id
 
 
 def test_put_profile_sets_phone_to_none_when_not_sent():
-    create_response = client.put("/profile", json={**VALID_PROFILE, "phone": "+30 210 000 0000"})
+    create_response = client.put(
+        "/api/profile", json={**VALID_PROFILE, "phone": "+30 210 000 0000"}
+    )
 
     assert create_response.status_code == 200
 
-    update_response = client.put("/profile", json=VALID_PROFILE)
+    update_response = client.put("/api/profile", json=VALID_PROFILE)
 
     assert update_response.status_code == 200
     assert update_response.json()["phone"] is None
 
-    get_response = client.get("/profile")
+    get_response = client.get("/api/profile")
 
     assert get_response.json()["phone"] is None
 
 
 def test_put_profile_returns_422_for_invalid_email():
-    update_response = client.put("/profile", json={**VALID_PROFILE, "email": "not-an-email"})
+    update_response = client.put("/api/profile", json={**VALID_PROFILE, "email": "not-an-email"})
 
     assert update_response.status_code == 422
 
 
 def test_put_profile_returns_422_for_invalid_url():
-    update_response = client.put("/profile", json={**VALID_PROFILE, "linkedin_url": "not-a-url"})
+    update_response = client.put(
+        "/api/profile", json={**VALID_PROFILE, "linkedin_url": "not-a-url"}
+    )
 
     assert update_response.status_code == 422
 
@@ -96,12 +102,12 @@ def test_put_profile_returns_422_when_required_field_is_missing():
     profile = VALID_PROFILE.copy()
     del profile["full_name"]
 
-    update_response = client.put("/profile", json=profile)
+    update_response = client.put("/api/profile", json=profile)
 
     assert update_response.status_code == 422
 
 
 def test_put_profile_returns_422_for_empty_full_name():
-    update_response = client.put("/profile", json={**VALID_PROFILE, "full_name": ""})
+    update_response = client.put("/api/profile", json={**VALID_PROFILE, "full_name": ""})
 
     assert update_response.status_code == 422
