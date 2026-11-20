@@ -17,7 +17,7 @@ VALID_PROJECT = {
 
 # --- POST /projects ---
 def test_create_project_with_valid_data():
-    create_response = client.post("/projects", json=VALID_PROJECT)
+    create_response = client.post("/api/projects", json=VALID_PROJECT)
 
     assert create_response.status_code == 201
 
@@ -32,7 +32,7 @@ def test_create_project_with_valid_data():
 
 
 def test_create_project_with_only_name_returns_201():
-    create_response = client.post("/projects", json={"name": "Career Copilot"})
+    create_response = client.post("/api/projects", json={"name": "Career Copilot"})
 
     assert create_response.status_code == 201
 
@@ -45,32 +45,33 @@ def test_create_project_with_only_name_returns_201():
 
 
 def test_create_project_with_empty_name_returns_422():
-    create_response = client.post("/projects", json={**VALID_PROJECT, "name": ""})
+    create_response = client.post("/api/projects", json={**VALID_PROJECT, "name": ""})
 
     assert create_response.status_code == 422
 
 
 def test_create_project_with_description_of_501_characters_returns_422():
-    create_response = client.post("/projects", json={**VALID_PROJECT, "description": "a" * 501})
+    create_response = client.post("/api/projects", json={**VALID_PROJECT, "description": "a" * 501})
 
     assert create_response.status_code == 422
 
 
 def test_create_project_with_description_of_500_characters_returns_201():
-    create_response = client.post("/projects", json={**VALID_PROJECT, "description": "a" * 500})
+    create_response = client.post("/api/projects", json={**VALID_PROJECT, "description": "a" * 500})
 
     assert create_response.status_code == 201
 
 
 def test_create_project_with_invalid_url_returns_422():
-    create_response = client.post("/projects", json={**VALID_PROJECT, "url": "not a url"})
+    create_response = client.post("/api/projects", json={**VALID_PROJECT, "url": "not a url"})
 
     assert create_response.status_code == 422
 
 
 def test_create_project_with_end_date_before_start_date_returns_422():
     create_response = client.post(
-        "/projects", json={**VALID_PROJECT, "start_date": "2025-06-30", "end_date": "2025-01-01"}
+        "/api/projects",
+        json={**VALID_PROJECT, "start_date": "2025-06-30", "end_date": "2025-01-01"},
     )
 
     assert create_response.status_code == 422
@@ -78,7 +79,8 @@ def test_create_project_with_end_date_before_start_date_returns_422():
 
 def test_create_project_with_end_date_equal_to_start_date_returns_201():
     create_response = client.post(
-        "/projects", json={**VALID_PROJECT, "start_date": "2025-06-30", "end_date": "2025-06-30"}
+        "/api/projects",
+        json={**VALID_PROJECT, "start_date": "2025-06-30", "end_date": "2025-06-30"},
     )
 
     assert create_response.status_code == 201
@@ -88,7 +90,7 @@ def test_create_project_with_only_end_date_returns_201():
     project = VALID_PROJECT.copy()
     del project["start_date"]
 
-    create_response = client.post("/projects", json=project)
+    create_response = client.post("/api/projects", json=project)
 
     assert create_response.status_code == 201
 
@@ -97,18 +99,18 @@ def test_create_project_with_only_start_date_returns_201():
     project = VALID_PROJECT.copy()
     del project["end_date"]
 
-    create_response = client.post("/projects", json=project)
+    create_response = client.post("/api/projects", json=project)
 
     assert create_response.status_code == 201
 
 
 # --- GET /projects ---
 def test_list_projects_returns_created_projects():
-    create_response = client.post("/projects", json=VALID_PROJECT)
+    create_response = client.post("/api/projects", json=VALID_PROJECT)
 
     assert create_response.status_code == 201
 
-    get_response = client.get("/projects")
+    get_response = client.get("/api/projects")
 
     assert get_response.status_code == 200
     assert [project["name"] for project in get_response.json()] == [VALID_PROJECT["name"]]
@@ -116,12 +118,12 @@ def test_list_projects_returns_created_projects():
 
 # --- GET /projects/{project_id} ---
 def test_get_project_returns_200():
-    create_response = client.post("/projects", json=VALID_PROJECT)
+    create_response = client.post("/api/projects", json=VALID_PROJECT)
 
     assert create_response.status_code == 201
     project_id = create_response.json()["id"]
 
-    get_response = client.get(f"/projects/{project_id}")
+    get_response = client.get(f"/api/projects/{project_id}")
 
     assert get_response.status_code == 200
 
@@ -136,39 +138,39 @@ def test_get_project_returns_200():
 
 def test_get_project_returns_404_when_not_found():
     project_id = uuid.uuid4()
-    get_response = client.get(f"/projects/{project_id}")
+    get_response = client.get(f"/api/projects/{project_id}")
 
     assert get_response.status_code == 404
     assert get_response.json()["detail"] == "Project not found"
 
 
 def test_get_project_with_invalid_id_returns_422():
-    get_response = client.get("/projects/abc")
+    get_response = client.get("/api/projects/abc")
 
     assert get_response.status_code == 422
 
 
 # --- PUT /projects/{project_id} ---
 def test_update_project_returns_200():
-    create_response = client.post("/projects", json=VALID_PROJECT)
+    create_response = client.post("/api/projects", json=VALID_PROJECT)
 
     assert create_response.status_code == 201
     project_id = create_response.json()["id"]
 
     update_response = client.put(
-        f"/projects/{project_id}", json={**VALID_PROJECT, "description": "Updated summary"}
+        f"/api/projects/{project_id}", json={**VALID_PROJECT, "description": "Updated summary"}
     )
 
     assert update_response.status_code == 200
     assert update_response.json()["description"] == "Updated summary"
 
-    get_response = client.get(f"/projects/{project_id}")
+    get_response = client.get(f"/api/projects/{project_id}")
 
     assert get_response.json()["description"] == "Updated summary"
 
 
 def test_update_project_sets_url_to_none_when_not_sent():
-    create_response = client.post("/projects", json=VALID_PROJECT)
+    create_response = client.post("/api/projects", json=VALID_PROJECT)
 
     assert create_response.status_code == 201
     project_id = create_response.json()["id"]
@@ -176,66 +178,66 @@ def test_update_project_sets_url_to_none_when_not_sent():
     project = VALID_PROJECT.copy()
     del project["url"]
 
-    update_response = client.put(f"/projects/{project_id}", json=project)
+    update_response = client.put(f"/api/projects/{project_id}", json=project)
 
     assert update_response.status_code == 200
 
-    get_response = client.get(f"/projects/{project_id}")
+    get_response = client.get(f"/api/projects/{project_id}")
 
     assert get_response.json()["url"] is None
 
 
 def test_update_project_returns_404_when_not_found():
     project_id = uuid.uuid4()
-    update_response = client.put(f"/projects/{project_id}", json=VALID_PROJECT)
+    update_response = client.put(f"/api/projects/{project_id}", json=VALID_PROJECT)
 
     assert update_response.status_code == 404
     assert update_response.json()["detail"] == "Project not found"
 
 
 def test_update_project_with_invalid_id_returns_422():
-    update_response = client.put("/projects/abc", json=VALID_PROJECT)
+    update_response = client.put("/api/projects/abc", json=VALID_PROJECT)
 
     assert update_response.status_code == 422
 
 
 def test_update_project_with_empty_name_returns_422():
-    create_response = client.post("/projects", json=VALID_PROJECT)
+    create_response = client.post("/api/projects", json=VALID_PROJECT)
 
     assert create_response.status_code == 201
     project_id = create_response.json()["id"]
 
-    update_response = client.put(f"/projects/{project_id}", json={**VALID_PROJECT, "name": ""})
+    update_response = client.put(f"/api/projects/{project_id}", json={**VALID_PROJECT, "name": ""})
 
     assert update_response.status_code == 422
 
 
 # --- DELETE /projects/{project_id} ---
 def test_delete_project_returns_204():
-    create_response = client.post("/projects", json=VALID_PROJECT)
+    create_response = client.post("/api/projects", json=VALID_PROJECT)
 
     assert create_response.status_code == 201
     project_id = create_response.json()["id"]
 
-    delete_response = client.delete(f"/projects/{project_id}")
+    delete_response = client.delete(f"/api/projects/{project_id}")
 
     assert delete_response.status_code == 204
     assert delete_response.content == b""
 
-    get_response = client.get(f"/projects/{project_id}")
+    get_response = client.get(f"/api/projects/{project_id}")
 
     assert get_response.status_code == 404
 
 
 def test_delete_project_returns_404_when_not_found():
     project_id = uuid.uuid4()
-    delete_response = client.delete(f"/projects/{project_id}")
+    delete_response = client.delete(f"/api/projects/{project_id}")
 
     assert delete_response.status_code == 404
     assert delete_response.json()["detail"] == "Project not found"
 
 
 def test_delete_project_with_invalid_id_returns_422():
-    delete_response = client.delete("/projects/abc")
+    delete_response = client.delete("/api/projects/abc")
 
     assert delete_response.status_code == 422
